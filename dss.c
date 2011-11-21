@@ -346,7 +346,7 @@ void buf_put_dss_sign(buffer* buf, dss_key *key, const unsigned char* data,
 	m_fp_init(&dss_protok);
 	bytes_to_fp(&dss_protok, proto_k, SHA512_HASH_SIZE);
 	if (fp_mod(&dss_protok, key->q, &dss_k) != FP_OKAY) {
-		dropbear_exit("dss error");
+		dropbear_exit("DSS error");
 	}
 	m_fp_zero(&dss_protok);
 	m_burn(proto_k, SHA512_HASH_SIZE);
@@ -359,30 +359,30 @@ void buf_put_dss_sign(buffer* buf, dss_key *key, const unsigned char* data,
 
 	/* g^k mod p */
 	if (fp_exptmod(key->g, &dss_k, key->p, &dss_temp1) !=  FP_OKAY) {
-		dropbear_exit("dss error");
+		dropbear_exit("DSS error");
 	}
 	/* r = (g^k mod p) mod q */
 	if (fp_mod(&dss_temp1, key->q, &dss_r) != FP_OKAY) {
-		dropbear_exit("dss error");
+		dropbear_exit("DSS error");
 	}
 
 	/* x*r mod q */
 	if (fp_mulmod(&dss_r, key->x, key->q, &dss_temp1) != FP_OKAY) {
-		dropbear_exit("dss error");
+		dropbear_exit("DSS error");
 	}
 	/* (SHA1(M) + xr) mod q) */
 	if (fp_addmod(&dss_m, &dss_temp1, key->q, &dss_temp2) != FP_OKAY) {
-		dropbear_exit("dss error");
+		dropbear_exit("DSS error");
 	}
 	
 	/* (k^-1) mod q */
 	if (fp_invmod(&dss_k, key->q, &dss_temp1) != FP_OKAY) {
-		dropbear_exit("dss error");
+		dropbear_exit("DSS error");
 	}
 
 	/* s = (k^-1(SHA1(M) + xr)) mod q */
 	if (fp_mulmod(&dss_temp1, &dss_temp2, key->q, &dss_s) != FP_OKAY) {
-		dropbear_exit("dss error");
+		dropbear_exit("DSS error");
 	}
 
 	buf_putstring(buf, SSH_SIGNKEY_DSS, SSH_SIGNKEY_DSS_LEN);

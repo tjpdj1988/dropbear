@@ -32,29 +32,36 @@
 
 #define DSS_SIGNATURE_SIZE 4+SSH_SIGNKEY_DSS_LEN+4+2*SHA1_HASH_SIZE
 
-struct DSS_key {
+typedef struct {
 
+<<<<<<< mine
 	fp_int* p;
 	fp_int* q;
 	fp_int* g;
 	fp_int* y;
 	fp_int* x;
+=======
+	mp_int* p;
+	mp_int* q;
+	mp_int* g;
+	mp_int* y;
+	/* x is the private part */
+	mp_int* x;
+>>>>>>> theirs
 
-};
+} dropbear_dss_key;
 
-typedef struct DSS_key dss_key;
-
-void buf_put_dss_sign(buffer* buf, dss_key *key, const unsigned char* data,
+void buf_put_dss_sign(buffer* buf, dropbear_dss_key *key, const unsigned char* data,
 		unsigned int len);
 #ifdef DROPBEAR_SIGNKEY_VERIFY
-int buf_dss_verify(buffer* buf, dss_key *key, const unsigned char* data,
+int buf_dss_verify(buffer* buf, dropbear_dss_key *key, const unsigned char* data,
 		unsigned int len);
 #endif
-int buf_get_dss_pub_key(buffer* buf, dss_key *key);
-int buf_get_dss_priv_key(buffer* buf, dss_key *key);
-void buf_put_dss_pub_key(buffer* buf, dss_key *key);
-void buf_put_dss_priv_key(buffer* buf, dss_key *key);
-void dss_key_free(dss_key *key);
+int buf_get_dss_pub_key(buffer* buf, dropbear_dss_key *key);
+int buf_get_dss_priv_key(buffer* buf, dropbear_dss_key *key);
+void buf_put_dss_pub_key(buffer* buf, dropbear_dss_key *key);
+void buf_put_dss_priv_key(buffer* buf, dropbear_dss_key *key);
+void dss_key_free(dropbear_dss_key *key);
 
 #endif /* DROPBEAR_DSS */
 

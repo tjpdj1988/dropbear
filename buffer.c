@@ -108,7 +108,7 @@ buffer* buf_newcopy(buffer* buf) {
 /* Set the length of the buffer */
 void buf_setlen(buffer* buf, unsigned int len) {
 	if (len > buf->size) {
-		dropbear_exit("bad buf_setlen");
+		dropbear_exit("Bad buf_setlen");
 	}
 	buf->len = len;
 }
@@ -116,7 +116,7 @@ void buf_setlen(buffer* buf, unsigned int len) {
 /* Increment the length of the buffer */
 void buf_incrlen(buffer* buf, unsigned int incr) {
 	if (incr > BUF_MAX_INCR || buf->len + incr > buf->size) {
-		dropbear_exit("bad buf_incrlen");
+		dropbear_exit("Bad buf_incrlen");
 	}
 	buf->len += incr;
 }
@@ -124,7 +124,7 @@ void buf_incrlen(buffer* buf, unsigned int incr) {
 void buf_setpos(buffer* buf, unsigned int pos) {
 
 	if (pos > buf->len) {
-		dropbear_exit("bad buf_setpos");
+		dropbear_exit("Bad buf_setpos");
 	}
 	buf->pos = pos;
 }
@@ -132,7 +132,7 @@ void buf_setpos(buffer* buf, unsigned int pos) {
 /* increment the postion by incr, increasing the buffer length if required */
 void buf_incrwritepos(buffer* buf, unsigned int incr) {
 	if (incr > BUF_MAX_INCR || buf->pos + incr > buf->size) {
-		dropbear_exit("bad buf_incrwritepos");
+		dropbear_exit("Bad buf_incrwritepos");
 	}
 	buf->pos += incr;
 	if (buf->pos > buf->len) {
@@ -146,7 +146,7 @@ void buf_incrpos(buffer* buf,  int incr) {
 	if (incr > BUF_MAX_INCR ||
 			(unsigned int)((int)buf->pos + incr) > buf->len 
 			|| ((int)buf->pos + incr) < 0) {
-		dropbear_exit("bad buf_incrpos");
+		dropbear_exit("Bad buf_incrpos");
 	}
 	buf->pos += incr;
 }
@@ -157,7 +157,7 @@ unsigned char buf_getbyte(buffer* buf) {
 	/* This check is really just ==, but the >= allows us to check for the
 	 * bad case of pos > len, which should _never_ happen. */
 	if (buf->pos >= buf->len) {
-		dropbear_exit("bad buf_getbyte");
+		dropbear_exit("Bad buf_getbyte");
 	}
 	return buf->data[buf->pos++];
 }
@@ -187,7 +187,7 @@ void buf_putbyte(buffer* buf, unsigned char val) {
 unsigned char* buf_getptr(buffer* buf, unsigned int len) {
 
 	if (buf->pos + len > buf->len) {
-		dropbear_exit("bad buf_getptr");
+		dropbear_exit("Bad buf_getptr");
 	}
 	return &buf->data[buf->pos];
 }
@@ -197,7 +197,7 @@ unsigned char* buf_getptr(buffer* buf, unsigned int len) {
 unsigned char* buf_getwriteptr(buffer* buf, unsigned int len) {
 
 	if (buf->pos + len > buf->size) {
-		dropbear_exit("bad buf_getwriteptr");
+		dropbear_exit("Bad buf_getwriteptr");
 	}
 	return &buf->data[buf->pos];
 }
@@ -211,7 +211,7 @@ unsigned char* buf_getstring(buffer* buf, unsigned int *retlen) {
 	unsigned char* ret;
 	len = buf_getint(buf);
 	if (len > MAX_STRING_LEN) {
-		dropbear_exit("string too long");
+		dropbear_exit("String too long");
 	}
 
 	if (retlen != NULL) {
@@ -222,6 +222,20 @@ unsigned char* buf_getstring(buffer* buf, unsigned int *retlen) {
 	buf_incrpos(buf, len);
 	ret[len] = '\0';
 
+	return ret;
+}
+
+/* Return a string as a newly allocated buffer */
+buffer * buf_getstringbuf(buffer *buf) {
+	buffer *ret;
+	unsigned char* str;
+	unsigned int len;
+	str = buf_getstring(buf, &len);
+	ret = m_malloc(sizeof(*ret));
+	ret->data = str;
+	ret->len = len;
+	ret->size = len;
+	ret->pos = 0;
 	return ret;
 }
 

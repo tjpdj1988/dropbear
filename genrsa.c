@@ -37,14 +37,14 @@ static void getrsaprime(fp_int* prime, fp_int *primeminus,
 		fp_int* rsa_e, unsigned int size);
 
 /* mostly taken from libtomcrypt's rsa key generation routine */
-rsa_key * gen_rsa_priv_key(unsigned int size) {
+dropbear_rsa_key * gen_rsa_priv_key(unsigned int size) {
 
-	rsa_key * key;
+	dropbear_rsa_key * key;
 	DEF_FP_INT(pminus);
 	DEF_FP_INT(qminus);
 	DEF_FP_INT(lcm);
 
-	key = (rsa_key*)m_malloc(sizeof(rsa_key));
+	key = m_malloc(sizeof(*key));
 
 	key->e = (fp_int*)m_malloc(sizeof(fp_int));
 	key->n = (fp_int*)m_malloc(sizeof(fp_int));
@@ -99,13 +99,12 @@ static void getrsaprime(fp_int* prime, fp_int *primeminus,
 
 		/* find the next integer which is prime, 8 round of miller-rabin */
 		if (fp_prime_next_prime(prime, 8, 0) != FP_OKAY) {
-			fprintf(stderr, "rsa generation failed\n");
+			fprintf(stderr, "RSA generation failed\n");
 			exit(1);
 		}
 
 		/* subtract one to get p-1 */
 		fp_sub_d(prime, 1, primeminus);
-
 		/* check relative primality to e */
 		fp_gcd(primeminus, rsa_e, &temp_gcd);
 	} while (fp_cmp_d(&temp_gcd, 1) != FP_EQ); /* while gcd(p-1, e) != 1 */
