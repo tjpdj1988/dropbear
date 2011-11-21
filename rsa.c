@@ -40,7 +40,8 @@
 
 static void rsa_pad_em(rsa_key * key,
 		const unsigned char * data, unsigned int len,
-		mp_int * rsa_em);
+		fp_int * rsa_em);
+
 
 /* Load a public rsa key from a buffer, initialising the values.
  * The key will have the same format as buf_put_rsa_key.
@@ -51,22 +52,23 @@ int buf_get_rsa_pub_key(buffer* buf, rsa_key *key) {
     int ret = DROPBEAR_FAILURE;
 	TRACE(("enter buf_get_rsa_pub_key"))
 	dropbear_assert(key != NULL);
-	key->e = m_malloc(sizeof(mp_int));
-	key->n = m_malloc(sizeof(mp_int));
-	m_mp_init_multi(key->e, key->n, NULL);
+	key->e = m_malloc(sizeof(fp_int));
+	key->n = m_malloc(sizeof(fp_int));
+	fp_init(key->e);
+	fp_init(key->n);
 	key->d = NULL;
 	key->p = NULL;
 	key->q = NULL;
 
 	buf_incrpos(buf, 4+SSH_SIGNKEY_RSA_LEN); /* int + "ssh-rsa" */
 
-	if (buf_getmpint(buf, key->e) == DROPBEAR_FAILURE
-	 || buf_getmpint(buf, key->n) == DROPBEAR_FAILURE) {
+	if (buf_getfpint(buf, key->e) == DROPBEAR_FAILURE
+	 || buf_getfpint(buf, key->n) == DROPBEAR_FAILURE) {
 		TRACE(("leave buf_get_rsa_pub_key: failure"))
 	    goto out;
 	}
 
-	if (mp_count_bits(key->n) < MIN_RSA_KEYLEN) {
+	if (fp_count_bits(key->n) < MIN_RSA_KEYLEN) {
 		dropbear_log(LOG_WARNING, "rsa key too short");
 	    goto out;
 	}
@@ -99,9 +101,9 @@ int buf_get_rsa_priv_key(buffer* buf, rsa_key *key) {
 	key->p = NULL;
 	key->q = NULL;
 
-	key->d = m_malloc(sizeof(mp_int));
-	m_mp_init(key->d);
-	if (buf_getmpint(buf, key->d) == DROPBEAR_FAILURE) {
+	key->d = m_malloc(sizeof(fp_int));
+	fp_init(key->d);
+	if (buf_getfpint(buf, key->d) == DROPBEAR_FAILURE) {
 		TRACE(("leave buf_get_rsa_priv_key: d: ret == DROPBEAR_FAILURE"))
 	    goto out;
 	}
@@ -109,16 +111,17 @@ int buf_get_rsa_priv_key(buffer* buf, rsa_key *key) {
 	if (buf->pos == buf->len) {
     	/* old Dropbear private keys didn't keep p and q, so we will ignore them*/
 	} else {
-		key->p = m_malloc(sizeof(mp_int));
-		key->q = m_malloc(sizeof(mp_int));
-		m_mp_init_multi(key->p, key->q, NULL);
+		key->p = m_malloc(sizeof(fp_int));
+		key->q = m_malloc(sizeof(fp_int));
+		fp_init(key->p);
+		fp_init(key->q);
 
-		if (buf_getmpint(buf, key->p) == DROPBEAR_FAILURE) {
+		if (buf_getfpint(buf, key->p) == DROPBEAR_FAILURE) {
 			TRACE(("leave buf_get_rsa_priv_key: p: ret == DROPBEAR_FAILURE"))
 		    goto out;
 		}
 
-		if (buf_getmpint(buf, key->q) == DROPBEAR_FAILURE) {
+		if (buf_getfpint(buf, key->q) == DROPBEAR_FAILURE) {
 			TRACE(("leave buf_get_rsa_priv_key: q: ret == DROPBEAR_FAILURE"))
 		    goto out;
 		}
@@ -146,23 +149,23 @@ void rsa_key_free(rsa_key *key) {
 		return;
 	}
 	if (key->d) {
-		mp_clear(key->d);
+		fp_zero(key->d);
 		m_free(key->d);
 	}
 	if (key->e) {
-		mp_clear(key->e);
+		fp_zero(key->e);
 		m_free(key->e);
 	}
 	if (key->n) {
-		 mp_clear(key->n);
+		 fp_zero(key->n);
 		 m_free(key->n);
 	}
 	if (key->p) {
-		mp_clear(key->p);
+		fp_zero(key->p);
 		m_free(key->p);
 	}
 	if (key->q) {
-		mp_clear(key->q);
+		fp_zero(key->q);
 		m_free(key->q);
 	}
 	m_free(key);
@@ -172,8 +175,8 @@ void rsa_key_free(rsa_key *key) {
 /* Put the public rsa key into the buffer in the required format:
  *
  * string	"ssh-rsa"
- * mp_int	e
- * mp_int	n
+ * fp_int	e
+ * fp_int	n
  */
 void buf_put_rsa_pub_key(buffer* buf, rsa_key *key) {
 
@@ -181,8 +184,8 @@ void buf_put_rsa_pub_key(buffer* buf, rsa_key *key) {
 	dropbear_assert(key != NULL);
 
 	buf_putstring(buf, SSH_SIGNKEY_RSA, SSH_SIGNKEY_RSA_LEN);
-	buf_putmpint(buf, key->e);
-	buf_putmpint(buf, key->n);
+	buf_putfpint(buf, key->e);
+	buf_putfpint(buf, key->n);
 
 	TRACE(("leave buf_put_rsa_pub_key"))
 
@@ -195,14 +198,14 @@ void buf_put_rsa_priv_key(buffer* buf, rsa_key *key) {
 
 	dropbear_assert(key != NULL);
 	buf_put_rsa_pub_key(buf, key);
-	buf_putmpint(buf, key->d);
+	buf_putfpint(buf, key->d);
 
 	/* new versions have p and q, old versions don't */
 	if (key->p) {
-		buf_putmpint(buf, key->p);
+		buf_putfpint(buf, key->p);
 	}
 	if (key->q) {
-		buf_putmpint(buf, key->q);
+		buf_putfpint(buf, key->q);
 	}
 
 
@@ -217,31 +220,30 @@ int buf_rsa_verify(buffer * buf, rsa_key *key, const unsigned char* data,
 		unsigned int len) {
 
 	unsigned int slen;
-	DEF_MP_INT(rsa_s);
-	DEF_MP_INT(rsa_mdash);
-	DEF_MP_INT(rsa_em);
+	DEF_FP_INT(rsa_s);
+	DEF_FP_INT(rsa_mdash);
+	DEF_FP_INT(rsa_em);
 	int ret = DROPBEAR_FAILURE;
 
 	TRACE(("enter buf_rsa_verify"))
 
 	dropbear_assert(key != NULL);
 
-	m_mp_init_multi(&rsa_mdash, &rsa_s, &rsa_em, NULL);
+	fp_init(&rsa_mdash);
+	fp_init(&rsa_s);
+	fp_init(&rsa_em);
 
 	slen = buf_getint(buf);
-	if (slen != (unsigned int)mp_unsigned_bin_size(key->n)) {
+	if (slen != (unsigned int)fp_unsigned_bin_size(key->n)) {
 		TRACE(("bad size"))
 		goto out;
 	}
 
-	if (mp_read_unsigned_bin(&rsa_s, buf_getptr(buf, buf->len - buf->pos),
-				buf->len - buf->pos) != MP_OKAY) {
-		TRACE(("failed reading rsa_s"))
-		goto out;
-	}
+	fp_read_unsigned_bin(&rsa_s, buf_getptr(buf, buf->len - buf->pos),
+				buf->len - buf->pos);
 
 	/* check that s <= n-1 */
-	if (mp_cmp(&rsa_s, key->n) != MP_LT) {
+	if (fp_cmp(&rsa_s, key->n) != FP_LT) {
 		TRACE(("s > n-1"))
 		goto out;
 	}
@@ -249,19 +251,22 @@ int buf_rsa_verify(buffer * buf, rsa_key *key, const unsigned char* data,
 	/* create the magic PKCS padded value */
 	rsa_pad_em(key, data, len, &rsa_em);
 
-	if (mp_exptmod(&rsa_s, key->e, key->n, &rsa_mdash) != MP_OKAY) {
+	if (fp_exptmod(&rsa_s, key->e, key->n, &rsa_mdash) != FP_OKAY) {
 		TRACE(("failed exptmod rsa_s"))
 		goto out;
 	}
 
-	if (mp_cmp(&rsa_em, &rsa_mdash) == MP_EQ) {
+	if (fp_cmp(&rsa_em, &rsa_mdash) == FP_EQ) {
 		/* signature is valid */
 		TRACE(("success!"))
 		ret = DROPBEAR_SUCCESS;
 	}
 
 out:
-	mp_clear_multi(&rsa_mdash, &rsa_s, &rsa_em, NULL);
+	fp_zero(&rsa_mdash);
+	fp_zero(&rsa_s);
+	fp_zero(&rsa_em);
+
 	TRACE(("leave buf_rsa_verify: ret %d", ret))
 	return ret;
 }
@@ -275,15 +280,18 @@ void buf_put_rsa_sign(buffer* buf, rsa_key *key, const unsigned char* data,
 
 	unsigned int nsize, ssize;
 	unsigned int i;
-	DEF_MP_INT(rsa_s);
-	DEF_MP_INT(rsa_tmp1);
-	DEF_MP_INT(rsa_tmp2);
-	DEF_MP_INT(rsa_tmp3);
+	DEF_FP_INT(rsa_s);
+	DEF_FP_INT(rsa_tmp1);
+	DEF_FP_INT(rsa_tmp2);
+	DEF_FP_INT(rsa_tmp3);
 	
 	TRACE(("enter buf_put_rsa_sign"))
 	dropbear_assert(key != NULL);
 
-	m_mp_init_multi(&rsa_s, &rsa_tmp1, &rsa_tmp2, &rsa_tmp3, NULL);
+	fp_init(&rsa_s);
+	fp_init(&rsa_tmp1);
+	fp_init(&rsa_tmp2);
+	fp_init(&rsa_tmp3);
 
 	rsa_pad_em(key, data, len, &rsa_tmp1);
 
@@ -295,32 +303,32 @@ void buf_put_rsa_sign(buffer* buf, rsa_key *key, const unsigned char* data,
 
 	/* generate the r blinding value */
 	/* rsa_tmp2 is r */
-	gen_random_mpint(key->n, &rsa_tmp2);
+	gen_random_fpint(key->n, &rsa_tmp2);
 
 	/* rsa_tmp1 is em */
 	/* em' = em * r^e mod n */
 
 	/* rsa_s used as a temp var*/
-	if (mp_exptmod(&rsa_tmp2, key->e, key->n, &rsa_s) != MP_OKAY) {
+	if (fp_exptmod(&rsa_tmp2, key->e, key->n, &rsa_s) != FP_OKAY) {
 		dropbear_exit("rsa error");
 	}
-	if (mp_invmod(&rsa_tmp2, key->n, &rsa_tmp3) != MP_OKAY) {
+	if (fp_invmod(&rsa_tmp2, key->n, &rsa_tmp3) != FP_OKAY) {
 		dropbear_exit("rsa error");
 	}
-	if (mp_mulmod(&rsa_tmp1, &rsa_s, key->n, &rsa_tmp2) != MP_OKAY) {
+	if (fp_mulmod(&rsa_tmp1, &rsa_s, key->n, &rsa_tmp2) != FP_OKAY) {
 		dropbear_exit("rsa error");
 	}
 
 	/* rsa_tmp2 is em' */
 	/* s' = (em')^d mod n */
-	if (mp_exptmod(&rsa_tmp2, key->d, key->n, &rsa_tmp1) != MP_OKAY) {
+	if (fp_exptmod(&rsa_tmp2, key->d, key->n, &rsa_tmp1) != FP_OKAY) {
 		dropbear_exit("rsa error");
 	}
 
 	/* rsa_tmp1 is s' */
 	/* rsa_tmp3 is r^(-1) mod n */
 	/* s = (s')r^(-1) mod n */
-	if (mp_mulmod(&rsa_tmp1, &rsa_tmp3, key->n, &rsa_s) != MP_OKAY) {
+	if (fp_mulmod(&rsa_tmp1, &rsa_tmp3, key->n, &rsa_s) != FP_OKAY) {
 		dropbear_exit("rsa error");
 	}
 
@@ -328,33 +336,34 @@ void buf_put_rsa_sign(buffer* buf, rsa_key *key, const unsigned char* data,
 
 	/* s = em^d mod n */
 	/* rsa_tmp1 is em */
-	if (mp_exptmod(&rsa_tmp1, key->d, key->n, &rsa_s) != MP_OKAY) {
+	if (fp_exptmod(&rsa_tmp1, key->d, key->n, &rsa_s) != FP_OKAY) {
 		dropbear_exit("rsa error");
 	}
 
 #endif /* RSA_BLINDING */
 
-	mp_clear_multi(&rsa_tmp1, &rsa_tmp2, &rsa_tmp3, NULL);
+	fp_zero(&rsa_tmp1);
+	fp_zero(&rsa_tmp2);
+	fp_zero(&rsa_tmp3);
 	
 	/* create the signature to return */
 	buf_putstring(buf, SSH_SIGNKEY_RSA, SSH_SIGNKEY_RSA_LEN);
 
-	nsize = mp_unsigned_bin_size(key->n);
+	nsize = fp_unsigned_bin_size(key->n);
 
 	/* string rsa_signature_blob length */
 	buf_putint(buf, nsize);
 	/* pad out s to same length as n */
-	ssize = mp_unsigned_bin_size(&rsa_s);
+	ssize = fp_unsigned_bin_size(&rsa_s);
 	dropbear_assert(ssize <= nsize);
 	for (i = 0; i < nsize-ssize; i++) {
 		buf_putbyte(buf, 0x00);
 	}
 
-	if (mp_to_unsigned_bin(&rsa_s, buf_getwriteptr(buf, ssize)) != MP_OKAY) {
-		dropbear_exit("rsa error");
-	}
+	fp_to_unsigned_bin(&rsa_s, buf_getwriteptr(buf, ssize));
+
 	buf_incrwritepos(buf, ssize);
-	mp_clear(&rsa_s);
+	fp_zero(&rsa_s);
 
 #if defined(DEBUG_RSA) && defined(DEBUG_TRACE)
 	printhex("RSA sig", buf->data, buf->len);
@@ -374,11 +383,11 @@ void buf_put_rsa_sign(buffer* buf, rsa_key *key, const unsigned char* data,
  * prefix is the ASN1 designator prefix,
  * hex 30 21 30 09 06 05 2B 0E 03 02 1A 05 00 04 14
  *
- * rsa_em must be a pointer to an initialised mp_int.
+ * rsa_em must be a pointer to an initialised fp_int.
  */
 static void rsa_pad_em(rsa_key * key,
 		const unsigned char * data, unsigned int len, 
-		mp_int * rsa_em) {
+		fp_int * rsa_em) {
 
 	/* ASN1 designator (including the 0x00 preceding) */
 	const unsigned char rsa_asn1_magic[] = 
@@ -392,7 +401,7 @@ static void rsa_pad_em(rsa_key * key,
 	
 	dropbear_assert(key != NULL);
 	dropbear_assert(data != NULL);
-	nsize = mp_unsigned_bin_size(key->n);
+	nsize = fp_unsigned_bin_size(key->n);
 
 	rsa_EM = buf_new(nsize-1);
 	/* type byte */
@@ -414,9 +423,9 @@ static void rsa_pad_em(rsa_key * key,
 
 	dropbear_assert(rsa_EM->pos == rsa_EM->size);
 
-	/* Create the mp_int from the encoded bytes */
+	/* Create the fp_int from the encoded bytes */
 	buf_setpos(rsa_EM, 0);
-	bytes_to_mp(rsa_em, buf_getptr(rsa_EM, rsa_EM->size),
+	bytes_to_fp(rsa_em, buf_getptr(rsa_EM, rsa_EM->size),
 			rsa_EM->size);
 	buf_free(rsa_EM);
 }

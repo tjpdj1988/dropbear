@@ -36,7 +36,7 @@
 #include "runopts.h"
 
 
-static void send_msg_kexdh_reply(mp_int *dh_e);
+static void send_msg_kexdh_reply(fp_int *dh_e);
 
 /* Handle a diffie-hellman key exchange initialisation. This involves
  * calculating a session key reply value, and corresponding hash. These
@@ -44,21 +44,21 @@ static void send_msg_kexdh_reply(mp_int *dh_e);
  * that function, then brings the new keys into use */
 void recv_msg_kexdh_init() {
 
-	DEF_MP_INT(dh_e);
+	DEF_FP_INT(dh_e);
 
 	TRACE(("enter recv_msg_kexdh_init"))
 	if (!ses.kexstate.recvkexinit) {
 		dropbear_exit("Premature kexdh_init message received");
 	}
 
-	m_mp_init(&dh_e);
-	if (buf_getmpint(ses.payload, &dh_e) != DROPBEAR_SUCCESS) {
+	m_fp_init(&dh_e);
+	if (buf_getfpint(ses.payload, &dh_e) != DROPBEAR_SUCCESS) {
 		dropbear_exit("Failed to get kex value");
 	}
 
 	send_msg_kexdh_reply(&dh_e);
 
-	mp_clear(&dh_e);
+	fp_zero(&dh_e);
 
 	send_msg_newkeys();
 	ses.requirenext = SSH_MSG_NEWKEYS;
@@ -71,18 +71,18 @@ void recv_msg_kexdh_init() {
  * result is sent to the client. 
  *
  * See the ietf-secsh-transport draft, section 6, for details */
-static void send_msg_kexdh_reply(mp_int *dh_e) {
+static void send_msg_kexdh_reply(fp_int *dh_e) {
 
-	DEF_MP_INT(dh_y);
-	DEF_MP_INT(dh_f);
+	DEF_FP_INT(dh_y);
+	DEF_FP_INT(dh_f);
 
 	TRACE(("enter send_msg_kexdh_reply"))
-	m_mp_init_multi(&dh_y, &dh_f, NULL);
+	m_fp_init_multi(&dh_y, &dh_f, NULL);
 	
 	gen_kexdh_vals(&dh_f, &dh_y);
 
 	kexdh_comb_key(&dh_f, &dh_y, dh_e, svr_opts.hostkey);
-	mp_clear(&dh_y);
+	fp_zero(&dh_y);
 
 	/* we can start creating the kexdh_reply packet */
 	CHECKCLEARTOWRITE();
@@ -91,8 +91,8 @@ static void send_msg_kexdh_reply(mp_int *dh_e) {
 			ses.newkeys->algo_hostkey);
 
 	/* put f */
-	buf_putmpint(ses.writepayload, &dh_f);
-	mp_clear(&dh_f);
+	buf_putfpint(ses.writepayload, &dh_f);
+	fp_zero(&dh_f);
 
 	/* calc the signature */
 	buf_put_sign(ses.writepayload, svr_opts.hostkey, 

@@ -59,8 +59,8 @@ void buf_eatstring(buffer *buf);
 void buf_putint(buffer* buf, unsigned int val);
 void buf_putstring(buffer* buf, const unsigned char* str, unsigned int len);
 void buf_putbytes(buffer *buf, const unsigned char *bytes, unsigned int len);
-void buf_putmpint(buffer* buf, mp_int * mp);
-int buf_getmpint(buffer* buf, mp_int* mp);
+void buf_putfpint(buffer* buf, fp_int * fp);
+int buf_getfpint(buffer* buf, fp_int* fp);
 unsigned int buf_getint(buffer* buf);
 
 #endif /* _BUFFER_H_ */

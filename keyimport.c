@@ -343,7 +343,7 @@ static int ber_write_id_len(void *dest, int id, int length, int flags)
 
 
 /* Simple structure to point to an mp-int within a blob. */
-struct mpint_pos { void *start; int bytes; };
+struct fpint_pos { void *start; int bytes; };
 
 /* ----------------------------------------------------------------------
  * Code to read and write OpenSSH private keys.
@@ -697,7 +697,7 @@ static int openssh_write(const char *filename, sign_key *key,
 	buffer * extrablob = NULL; /* used for calculated values to write */
 	unsigned char *outblob = NULL;
 	int outlen = -9999;
-	struct mpint_pos numbers[9];
+	struct fpint_pos numbers[9];
 	int nnumbers = -1, pos, len, seqlen, i;
 	char *header = NULL, *footer = NULL;
 	char zero[1];
@@ -706,7 +706,7 @@ static int openssh_write(const char *filename, sign_key *key,
 	int keytype = -1;
 
 #ifdef DROPBEAR_RSA
-	mp_int dmp1, dmq1, iqmp, tmpval; /* for rsa */
+	fp_int dmp1, dmq1, iqmp, tmpval; /* for rsa */
 
 	if (key->rsakey != NULL) {
 		keytype = DROPBEAR_SIGNKEY_RSA;
@@ -770,46 +770,42 @@ static int openssh_write(const char *filename, sign_key *key,
 		buf_incrpos(keyblob, numbers[5].bytes);
 
 		/* now calculate some extra parameters: */
-		m_mp_init(&tmpval);
-		m_mp_init(&dmp1);
-		m_mp_init(&dmq1);
-		m_mp_init(&iqmp);
+		m_fp_init(&tmpval);
+		m_fp_init(&dmp1);
+		m_fp_init(&dmq1);
+		m_fp_init(&iqmp);
 
 		/* dmp1 = d mod (p-1) */
-		if (mp_sub_d(key->rsakey->p, 1, &tmpval) != MP_OKAY) {
-			fprintf(stderr, "Bignum error for p-1\n");
-			goto error;
-		}
-		if (mp_mod(key->rsakey->d, &tmpval, &dmp1) != MP_OKAY) {
+		fp_sub_d(key->rsakey->p, 1, &tmpval);
+
+		if (fp_mod(key->rsakey->d, &tmpval, &dmp1) != FP_OKAY) {
 			fprintf(stderr, "Bignum error for dmp1\n");
 			goto error;
 		}
 
 		/* dmq1 = d mod (q-1) */
-		if (mp_sub_d(key->rsakey->q, 1, &tmpval) != MP_OKAY) {
-			fprintf(stderr, "Bignum error for q-1\n");
-			goto error;
-		}
-		if (mp_mod(key->rsakey->d, &tmpval, &dmq1) != MP_OKAY) {
+		fp_sub_d(key->rsakey->q, 1, &tmpval);
+
+		if (fp_mod(key->rsakey->d, &tmpval, &dmq1) != FP_OKAY) {
 			fprintf(stderr, "Bignum error for dmq1\n");
 			goto error;
 		}
 
 		/* iqmp = (q^-1) mod p */
-		if (mp_invmod(key->rsakey->q, key->rsakey->p, &iqmp) != MP_OKAY) {
+		if (fp_invmod(key->rsakey->q, key->rsakey->p, &iqmp) != FP_OKAY) {
 			fprintf(stderr, "Bignum error for iqmp\n");
 			goto error;
 		}
 
 		extrablob = buf_new(2000);
-		buf_putmpint(extrablob, &dmp1);
-		buf_putmpint(extrablob, &dmq1);
-		buf_putmpint(extrablob, &iqmp);
+		buf_putfpint(extrablob, &dmp1);
+		buf_putfpint(extrablob, &dmq1);
+		buf_putfpint(extrablob, &iqmp);
 		buf_setpos(extrablob, 0);
-		mp_clear(&dmp1);
-		mp_clear(&dmq1);
-		mp_clear(&iqmp);
-		mp_clear(&tmpval);
+		fp_zero(&dmp1);
+		fp_zero(&dmq1);
+		fp_zero(&iqmp);
+		fp_zero(&tmpval);
 		
 		/* dmp1 */
 		numbers[6].bytes = buf_getint(extrablob);
@@ -974,8 +970,8 @@ static int openssh_write(const char *filename, sign_key *key,
 
 /*
  * The format of the base64 blob is largely ssh2-packet-formatted,
- * except that mpints are a bit different: they're more like the
- * old ssh1 mpint. You have a 32-bit bit count N, followed by
+ * except that fpints are a bit different: they're more like the
+ * old ssh1 fpint. You have a 32-bit bit count N, followed by
  * (N+7)/8 bytes of data.
  * 
  * So. The blob contains:
@@ -998,20 +994,20 @@ static int openssh_write(const char *filename, sign_key *key,
  * decryption check.)
  * 
  * The payload blob, for an RSA key, contains:
- *  - mpint e
- *  - mpint d
- *  - mpint n  (yes, the public and private stuff is intermixed)
- *  - mpint u  (presumably inverse of p mod q)
- *  - mpint p  (p is the smaller prime)
- *  - mpint q  (q is the larger)
+ *  - fpint e
+ *  - fpint d
+ *  - fpint n  (yes, the public and private stuff is intermixed)
+ *  - fpint u  (presumably inverse of p mod q)
+ *  - fpint p  (p is the smaller prime)
+ *  - fpint q  (q is the larger)
  * 
  * For a DSA key, the payload blob contains:
  *  - uint32 0
- *  - mpint p
- *  - mpint g
- *  - mpint q
- *  - mpint y
- *  - mpint x
+ *  - fpint p
+ *  - fpint g
+ *  - fpint q
+ *  - fpint y
+ *  - fpint x
  * 
  * Alternatively, if the parameters are `predefined', that
  * (0,p,g,q) sequence can be replaced by a uint32 1 and a string
@@ -1209,7 +1205,7 @@ int sshcom_encrypted(const char *filename, char **comment)
 	return answer;
 }
 
-static int sshcom_read_mpint(void *data, int len, struct mpint_pos *ret)
+static int sshcom_read_fpint(void *data, int len, struct fpint_pos *ret)
 {
 	int bits;
 	int bytes;
@@ -1233,7 +1229,7 @@ static int sshcom_read_mpint(void *data, int len, struct mpint_pos *ret)
 	return len;						/* ensure further calls fail as well */
 }
 
-static int sshcom_put_mpint(void *target, void *data, int len)
+static int sshcom_put_fpint(void *target, void *data, int len)
 {
 	unsigned char *d = (unsigned char *)target;
 	unsigned char *i = (unsigned char *)data;
@@ -1402,14 +1398,14 @@ sign_key *sshcom_read(const char *filename, char *passphrase)
 	blob = snewn(blobsize, unsigned char);
 	privlen = 0;
 	if (type == RSA) {
-		struct mpint_pos n, e, d, u, p, q;
+		struct fpint_pos n, e, d, u, p, q;
 		int pos = 0;
-		pos += sshcom_read_mpint(ciphertext+pos, cipherlen-pos, &e);
-		pos += sshcom_read_mpint(ciphertext+pos, cipherlen-pos, &d);
-		pos += sshcom_read_mpint(ciphertext+pos, cipherlen-pos, &n);
-		pos += sshcom_read_mpint(ciphertext+pos, cipherlen-pos, &u);
-		pos += sshcom_read_mpint(ciphertext+pos, cipherlen-pos, &p);
-		pos += sshcom_read_mpint(ciphertext+pos, cipherlen-pos, &q);
+		pos += sshcom_read_fpint(ciphertext+pos, cipherlen-pos, &e);
+		pos += sshcom_read_fpint(ciphertext+pos, cipherlen-pos, &d);
+		pos += sshcom_read_fpint(ciphertext+pos, cipherlen-pos, &n);
+		pos += sshcom_read_fpint(ciphertext+pos, cipherlen-pos, &u);
+		pos += sshcom_read_fpint(ciphertext+pos, cipherlen-pos, &p);
+		pos += sshcom_read_fpint(ciphertext+pos, cipherlen-pos, &q);
 		if (!q.start) {
 			errmsg = "key data did not contain six integers";
 			goto error;
@@ -1427,17 +1423,17 @@ sign_key *sshcom_read(const char *filename, char *passphrase)
 		pos += put_mp(blob+pos, u.start, u.bytes);
 		privlen = pos - publen;
 	} else if (type == DSA) {
-		struct mpint_pos p, q, g, x, y;
+		struct fpint_pos p, q, g, x, y;
 		int pos = 4;
 		if (GET_32BIT(ciphertext) != 0) {
 			errmsg = "predefined DSA parameters not supported";
 			goto error;
 		}
-		pos += sshcom_read_mpint(ciphertext+pos, cipherlen-pos, &p);
-		pos += sshcom_read_mpint(ciphertext+pos, cipherlen-pos, &g);
-		pos += sshcom_read_mpint(ciphertext+pos, cipherlen-pos, &q);
-		pos += sshcom_read_mpint(ciphertext+pos, cipherlen-pos, &y);
-		pos += sshcom_read_mpint(ciphertext+pos, cipherlen-pos, &x);
+		pos += sshcom_read_fpint(ciphertext+pos, cipherlen-pos, &p);
+		pos += sshcom_read_fpint(ciphertext+pos, cipherlen-pos, &g);
+		pos += sshcom_read_fpint(ciphertext+pos, cipherlen-pos, &q);
+		pos += sshcom_read_fpint(ciphertext+pos, cipherlen-pos, &y);
+		pos += sshcom_read_fpint(ciphertext+pos, cipherlen-pos, &x);
 		if (!x.start) {
 			errmsg = "key data did not contain five integers";
 			goto error;
@@ -1489,7 +1485,7 @@ int sshcom_write(const char *filename, sign_key *key,
 	int publen, privlen;
 	unsigned char *outblob;
 	int outlen;
-	struct mpint_pos numbers[6];
+	struct fpint_pos numbers[6];
 	int nnumbers, initial_zero, pos, lenpos, i;
 	char *type;
 	char *ciphertext;
@@ -1510,16 +1506,16 @@ int sshcom_write(const char *filename, sign_key *key,
 	 */
 	if (key->alg == &ssh_rsa) {
 		int pos;
-		struct mpint_pos n, e, d, p, q, iqmp;
+		struct fpint_pos n, e, d, p, q, iqmp;
 
 		pos = 4 + GET_32BIT(pubblob);
-		pos += ssh2_read_mpint(pubblob+pos, publen-pos, &e);
-		pos += ssh2_read_mpint(pubblob+pos, publen-pos, &n);
+		pos += ssh2_read_fpint(pubblob+pos, publen-pos, &e);
+		pos += ssh2_read_fpint(pubblob+pos, publen-pos, &n);
 		pos = 0;
-		pos += ssh2_read_mpint(privblob+pos, privlen-pos, &d);
-		pos += ssh2_read_mpint(privblob+pos, privlen-pos, &p);
-		pos += ssh2_read_mpint(privblob+pos, privlen-pos, &q);
-		pos += ssh2_read_mpint(privblob+pos, privlen-pos, &iqmp);
+		pos += ssh2_read_fpint(privblob+pos, privlen-pos, &d);
+		pos += ssh2_read_fpint(privblob+pos, privlen-pos, &p);
+		pos += ssh2_read_fpint(privblob+pos, privlen-pos, &q);
+		pos += ssh2_read_fpint(privblob+pos, privlen-pos, &iqmp);
 
 		dropbear_assert(e.start && iqmp.start); /* can't go wrong */
 
@@ -1535,15 +1531,15 @@ int sshcom_write(const char *filename, sign_key *key,
 		type = "if-modn{sign{rsa-pkcs1-sha1},encrypt{rsa-pkcs1v2-oaep}}";
 	} else if (key->alg == &ssh_dss) {
 		int pos;
-		struct mpint_pos p, q, g, y, x;
+		struct fpint_pos p, q, g, y, x;
 
 		pos = 4 + GET_32BIT(pubblob);
-		pos += ssh2_read_mpint(pubblob+pos, publen-pos, &p);
-		pos += ssh2_read_mpint(pubblob+pos, publen-pos, &q);
-		pos += ssh2_read_mpint(pubblob+pos, publen-pos, &g);
-		pos += ssh2_read_mpint(pubblob+pos, publen-pos, &y);
+		pos += ssh2_read_fpint(pubblob+pos, publen-pos, &p);
+		pos += ssh2_read_fpint(pubblob+pos, publen-pos, &q);
+		pos += ssh2_read_fpint(pubblob+pos, publen-pos, &g);
+		pos += ssh2_read_fpint(pubblob+pos, publen-pos, &y);
 		pos = 0;
-		pos += ssh2_read_mpint(privblob+pos, privlen-pos, &x);
+		pos += ssh2_read_fpint(privblob+pos, privlen-pos, &x);
 
 		dropbear_assert(y.start && x.start); /* can't go wrong */
 
@@ -1589,7 +1585,7 @@ int sshcom_write(const char *filename, sign_key *key,
 		pos += 4;
 	}
 	for (i = 0; i < nnumbers; i++)
-		pos += sshcom_put_mpint(outblob+pos,
+		pos += sshcom_put_fpint(outblob+pos,
 								numbers[i].start, numbers[i].bytes);
 	/* Now wrap up the encrypted payload. */
 	PUT_32BIT(outblob+lenpos+4, pos - (lenpos+8));

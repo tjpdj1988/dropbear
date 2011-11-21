@@ -69,8 +69,8 @@ void setnonblocking(int fd);
 void disallow_core();
 int m_str_to_uint(const char* str, unsigned int *val);
 
-/* Used to force mp_ints to be initialised */
-#define DEF_MP_INT(X) mp_int X = {0, 0, 0, NULL}
+/* Used to force fp_ints to be initialised */
+#define DEF_FP_INT(X) fp_int X = {{},0, 0}
 
 /* Dropbear assertion */
 #define dropbear_assert(X) do { if (!(X)) { fail_assert(#X, __FILE__, __LINE__); } } while (0)

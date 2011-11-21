@@ -49,12 +49,12 @@ dss_key * gen_dss_priv_key(unsigned int size) {
 
 	key = (dss_key*)m_malloc(sizeof(dss_key));
 
-	key->p = (mp_int*)m_malloc(sizeof(mp_int));
-	key->q = (mp_int*)m_malloc(sizeof(mp_int));
-	key->g = (mp_int*)m_malloc(sizeof(mp_int));
-	key->y = (mp_int*)m_malloc(sizeof(mp_int));
-	key->x = (mp_int*)m_malloc(sizeof(mp_int));
-	m_mp_init_multi(key->p, key->q, key->g, key->y, key->x, NULL);
+	key->p = (fp_int*)m_malloc(sizeof(fp_int));
+	key->q = (fp_int*)m_malloc(sizeof(fp_int));
+	key->g = (fp_int*)m_malloc(sizeof(fp_int));
+	key->y = (fp_int*)m_malloc(sizeof(fp_int));
+	key->x = (fp_int*)m_malloc(sizeof(fp_int));
+	m_fp_init_multi(key->p, key->q, key->g, key->y, key->x, NULL);
 	
 	seedrandom();
 	
@@ -77,10 +77,10 @@ static void getq(dss_key *key) {
 	buf[0] |= 0x80; /* top bit high */
 	buf[QSIZE-1] |= 0x01; /* bottom bit high */
 
-	bytes_to_mp(key->q, buf, QSIZE);
+	bytes_to_fp(key->q, buf, QSIZE);
 
 	/* 18 rounds are required according to HAC */
-	if (mp_prime_next_prime(key->q, 18, 0) != MP_OKAY) {
+	if (fp_prime_next_prime(key->q, 18, 0) != FP_OKAY) {
 		fprintf(stderr, "dss key generation failed\n");
 		exit(1);
 	}
@@ -88,21 +88,18 @@ static void getq(dss_key *key) {
 
 static void getp(dss_key *key, unsigned int size) {
 
-	DEF_MP_INT(tempX);
-	DEF_MP_INT(tempC);
-	DEF_MP_INT(tempP);
-	DEF_MP_INT(temp2q);
+	DEF_FP_INT(tempX);
+	DEF_FP_INT(tempC);
+	DEF_FP_INT(tempP);
+	DEF_FP_INT(temp2q);
 	int result;
 	unsigned char *buf;
 
-	m_mp_init_multi(&tempX, &tempC, &tempP, &temp2q, NULL);
+	m_fp_init_multi(&tempX, &tempC, &tempP, &temp2q, NULL);
 
 
 	/* 2*q */
-	if (mp_mul_d(key->q, 2, &temp2q) != MP_OKAY) {
-		fprintf(stderr, "dss key generation failed\n");
-		exit(1);
-	}
+	fp_mul_d(key->q, 2, &temp2q);
 	
 	buf = (unsigned char*)m_malloc(size);
 
@@ -112,84 +109,74 @@ static void getp(dss_key *key, unsigned int size) {
 		genrandom(buf, size);
 		buf[0] |= 0x80; /* set the top bit high */
 
-		/* X is a random mp_int */
-		bytes_to_mp(&tempX, buf, size);
+		/* X is a random fp_int */
+		bytes_to_fp(&tempX, buf, size);
 
 		/* C = X mod 2q */
-		if (mp_mod(&tempX, &temp2q, &tempC) != MP_OKAY) {
+		if (fp_mod(&tempX, &temp2q, &tempC) != FP_OKAY) {
 			fprintf(stderr, "dss key generation failed\n");
 			exit(1);
 		}
 
 		/* P = X - (C - 1) = X - C + 1*/
-		if (mp_sub(&tempX, &tempC, &tempP) != MP_OKAY) {
-			fprintf(stderr, "dss key generation failed\n");
-			exit(1);
-		}
+		fp_sub(&tempX, &tempC, &tempP);
 		
-		if (mp_add_d(&tempP, 1, key->p) != MP_OKAY) {
-			fprintf(stderr, "dss key generation failed\n");
-			exit(1);
-		}
+		fp_add_d(&tempP, 1, key->p);
 
 		/* now check for prime, 5 rounds is enough according to HAC */
 		/* result == 1  =>  p is prime */
-		if (mp_prime_is_prime(key->p, 5, &result) != MP_OKAY) {
+		if (fp_prime_is_prime(key->p, 5, &result) != FP_OKAY) {
 			fprintf(stderr, "dss key generation failed\n");
 			exit(1);
 		}
 	} while (!result);
 
-	mp_clear_multi(&tempX, &tempC, &tempP, &temp2q, NULL);
+	fp_zero(&tempX);
+	fp_zero(&tempC);
+        fp_zero(&tempP);
+        fp_zero(&temp2q);
 	m_burn(buf, size);
 	m_free(buf);
 }
 
 static void getg(dss_key * key) {
 
-	DEF_MP_INT(div);
-	DEF_MP_INT(h);
-	DEF_MP_INT(val);
+	DEF_FP_INT(div);
+	DEF_FP_INT(h);
+	DEF_FP_INT(val);
 
-	m_mp_init_multi(&div, &h, &val, NULL);
+	m_fp_init_multi(&div, &h, &val, NULL);
 
 	/* get div=(p-1)/q */
-	if (mp_sub_d(key->p, 1, &val) != MP_OKAY) {
-		fprintf(stderr, "dss key generation failed\n");
-		exit(1);
-	}
-	if (mp_div(&val, key->q, &div, NULL) != MP_OKAY) {
-		fprintf(stderr, "dss key generation failed\n");
-		exit(1);
-	}
+	fp_sub_d(key->p, 1, &val);
+	fp_div(&val, key->q, &div, NULL);
 
 	/* initialise h=1 */
-	mp_set(&h, 1);
+	fp_set(&h, 1);
 	do {
 		/* now keep going with g=h^div mod p, until g > 1 */
-		if (mp_exptmod(&h, &div, key->p, key->g) != MP_OKAY) {
+		if (fp_exptmod(&h, &div, key->p, key->g) != FP_OKAY) {
 			fprintf(stderr, "dss key generation failed\n");
 			exit(1);
 		}
 
-		if (mp_add_d(&h, 1, &h) != MP_OKAY) {
-			fprintf(stderr, "dss key generation failed\n");
-			exit(1);
-		}
+		fp_add_d(&h, 1, &h);
 	
-	} while (mp_cmp_d(key->g, 1) != MP_GT);
+	} while (fp_cmp_d(key->g, 1) != FP_GT);
 
-	mp_clear_multi(&div, &h, &val, NULL);
+	fp_zero(&div);
+	fp_zero(&h);
+	fp_zero(&val);
 }
 
 static void getx(dss_key *key) {
 
-	gen_random_mpint(key->q, key->x);
+	gen_random_fpint(key->q, key->x);
 }
 
 static void gety(dss_key *key) {
 
-	if (mp_exptmod(key->g, key->x, key->p, key->y) != MP_OKAY) {
+	if (fp_exptmod(key->g, key->x, key->p, key->y) != FP_OKAY) {
 		fprintf(stderr, "dss key generation failed\n");
 		exit(1);
 	}

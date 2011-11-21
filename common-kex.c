@@ -261,8 +261,8 @@ void gen_new_keys() {
 	/* the dh_K and hash are the start of all hashes, we make use of that */
 
 	sha1_init(&hs);
-	sha1_process_mp(&hs, ses.dh_K);
-	mp_clear(ses.dh_K);
+	sha1_process_fp(&hs, ses.dh_K);
+	fp_zero(ses.dh_K);
 	m_free(ses.dh_K);
 	sha1_process(&hs, ses.hash, SHA1_HASH_SIZE);
 	m_burn(ses.hash, SHA1_HASH_SIZE);
@@ -482,72 +482,67 @@ void recv_msg_kexinit() {
 /* Initialises and generate one side of the diffie-hellman key exchange values.
  * See the ietf-secsh-transport draft, section 6, for details */
 /* dh_pub and dh_priv MUST be already initialised */
-void gen_kexdh_vals(mp_int *dh_pub, mp_int *dh_priv) {
+void gen_kexdh_vals(fp_int *dh_pub, fp_int *dh_priv) {
 
-	DEF_MP_INT(dh_p);
-	DEF_MP_INT(dh_q);
-	DEF_MP_INT(dh_g);
+	DEF_FP_INT(dh_p);
+	DEF_FP_INT(dh_q);
+	DEF_FP_INT(dh_g);
 
 	TRACE(("enter send_msg_kexdh_reply"))
 	
-	m_mp_init_multi(&dh_g, &dh_p, &dh_q, NULL);
+	m_fp_init_multi(&dh_g, &dh_p, &dh_q, NULL);
 
 	/* read the prime and generator*/
-	bytes_to_mp(&dh_p, (unsigned char*)dh_p_val, DH_P_LEN);
+	bytes_to_fp(&dh_p, (unsigned char*)dh_p_val, DH_P_LEN);
 	
-	if (mp_set_int(&dh_g, DH_G_VAL) != MP_OKAY) {
-		dropbear_exit("Diffie-Hellman error");
-	}
+	fp_set(&dh_g, DH_G_VAL);
 
 	/* calculate q = (p-1)/2 */
 	/* dh_priv is just a temp var here */
-	if (mp_sub_d(&dh_p, 1, dh_priv) != MP_OKAY) { 
-		dropbear_exit("Diffie-Hellman error");
-	}
-	if (mp_div_2(dh_priv, &dh_q) != MP_OKAY) {
-		dropbear_exit("Diffie-Hellman error");
-	}
+	fp_sub_d(&dh_p, 1, dh_priv);
+
+	fp_div_2(dh_priv, &dh_q);
 
 	/* Generate a private portion 0 < dh_priv < dh_q */
-	gen_random_mpint(&dh_q, dh_priv);
+	gen_random_fpint(&dh_q, dh_priv);
 
 	/* f = g^y mod p */
-	if (mp_exptmod(&dh_g, dh_priv, &dh_p, dh_pub) != MP_OKAY) {
+	if (fp_exptmod(&dh_g, dh_priv, &dh_p, dh_pub) != FP_OKAY) {
 		dropbear_exit("Diffie-Hellman error");
 	}
-	mp_clear_multi(&dh_g, &dh_p, &dh_q, NULL);
+	m_fp_zero_multi(&dh_g, &dh_p, &dh_q, NULL);
 }
 
 /* This function is fairly common between client/server, with some substitution
  * of dh_e/dh_f etc. Hence these arguments:
  * dh_pub_us is 'e' for the client, 'f' for the server. dh_pub_them is 
  * vice-versa. dh_priv is the x/y value corresponding to dh_pub_us */
-void kexdh_comb_key(mp_int *dh_pub_us, mp_int *dh_priv, mp_int *dh_pub_them,
+void kexdh_comb_key(fp_int *dh_pub_us, fp_int *dh_priv, fp_int *dh_pub_them,
 		sign_key *hostkey) {
 
-	mp_int dh_p;
-	mp_int *dh_e = NULL, *dh_f = NULL;
+	fp_int dh_p;
+	fp_int *dh_e = NULL, *dh_f = NULL;
 	hash_state hs;
 
 	/* read the prime and generator*/
-	m_mp_init(&dh_p);
-	bytes_to_mp(&dh_p, dh_p_val, DH_P_LEN);
+	m_fp_init(&dh_p);
+	bytes_to_fp(&dh_p, dh_p_val, DH_P_LEN);
 
 	/* Check that dh_pub_them (dh_e or dh_f) is in the range [1, p-1] */
-	if (mp_cmp(dh_pub_them, &dh_p) != MP_LT 
-			|| mp_cmp_d(dh_pub_them, 0) != MP_GT) {
+	if (fp_cmp(dh_pub_them, &dh_p) != FP_LT 
+			|| fp_cmp_d(dh_pub_them, 0) != FP_GT) {
 		dropbear_exit("Diffie-Hellman error");
 	}
 	
 	/* K = e^y mod p = f^x mod p */
-	ses.dh_K = (mp_int*)m_malloc(sizeof(mp_int));
-	m_mp_init(ses.dh_K);
-	if (mp_exptmod(dh_pub_them, dh_priv, &dh_p, ses.dh_K) != MP_OKAY) {
+	ses.dh_K = (fp_int*)m_malloc(sizeof(fp_int));
+	m_fp_init(ses.dh_K);
+	if (fp_exptmod(dh_pub_them, dh_priv, &dh_p, ses.dh_K) != FP_OKAY) {
 		dropbear_exit("Diffie-Hellman error");
 	}
 
 	/* clear no longer needed vars */
-	mp_clear_multi(&dh_p, NULL);
+	m_fp_zero_multi(&dh_p, NULL);
 
 	/* From here on, the code needs to work with the _same_ vars on each side,
 	 * not vice-versaing for client/server */
@@ -563,11 +558,11 @@ void kexdh_comb_key(mp_int *dh_pub_us, mp_int *dh_priv, mp_int *dh_pub_them,
 	/* K_S, the host key */
 	buf_put_pub_key(ses.kexhashbuf, hostkey, ses.newkeys->algo_hostkey);
 	/* e, exchange value sent by the client */
-	buf_putmpint(ses.kexhashbuf, dh_e);
+	buf_putfpint(ses.kexhashbuf, dh_e);
 	/* f, exchange value sent by the server */
-	buf_putmpint(ses.kexhashbuf, dh_f);
+	buf_putfpint(ses.kexhashbuf, dh_f);
 	/* K, the shared secret */
-	buf_putmpint(ses.kexhashbuf, ses.dh_K);
+	buf_putfpint(ses.kexhashbuf, ses.dh_K);
 
 	/* calculate the hash H to sign */
 	sha1_init(&hs);
@@ -597,8 +592,8 @@ static void read_kex_algos() {
 	algo_type * s2c_hash_algo = NULL;
 	algo_type * c2s_cipher_algo = NULL;
 	algo_type * s2c_cipher_algo = NULL;
-	algo_type * c2s_comp_algo = NULL;
-	algo_type * s2c_comp_algo = NULL;
+	algo_type * c2s_cofp_algo = NULL;
+	algo_type * s2c_cofp_algo = NULL;
 	/* the generic one */
 	algo_type * algo = NULL;
 
@@ -666,20 +661,20 @@ static void read_kex_algos() {
 	TRACE(("hash s2c is  %s", s2c_hash_algo->name))
 
 	/* compression_algorithms_client_to_server */
-	c2s_comp_algo = ses.buf_match_algo(ses.payload, sshcompress, &goodguess);
-	if (c2s_comp_algo == NULL) {
+	c2s_cofp_algo = ses.buf_match_algo(ses.payload, sshcompress, &goodguess);
+	if (c2s_cofp_algo == NULL) {
 		erralgo = "comp c->s";
 		goto error;
 	}
-	TRACE(("hash c2s is  %s", c2s_comp_algo->name))
+	TRACE(("hash c2s is  %s", c2s_cofp_algo->name))
 
 	/* compression_algorithms_server_to_client */
-	s2c_comp_algo = ses.buf_match_algo(ses.payload, sshcompress, &goodguess);
-	if (s2c_comp_algo == NULL) {
+	s2c_cofp_algo = ses.buf_match_algo(ses.payload, sshcompress, &goodguess);
+	if (s2c_cofp_algo == NULL) {
 		erralgo = "comp s->c";
 		goto error;
 	}
-	TRACE(("hash s2c is  %s", s2c_comp_algo->name))
+	TRACE(("hash s2c is  %s", s2c_cofp_algo->name))
 
 	/* languages_client_to_server */
 	buf_eatstring(ses.payload);
@@ -710,8 +705,8 @@ static void read_kex_algos() {
 			(struct dropbear_hash*)s2c_hash_algo->data;
 		ses.newkeys->trans_algo_mac = 
 			(struct dropbear_hash*)c2s_hash_algo->data;
-		ses.newkeys->recv_algo_comp = s2c_comp_algo->val;
-		ses.newkeys->trans_algo_comp = c2s_comp_algo->val;
+		ses.newkeys->recv_algo_comp = s2c_cofp_algo->val;
+		ses.newkeys->trans_algo_comp = c2s_cofp_algo->val;
 	} else {
 		/* SERVER */
 		ses.newkeys->recv_algo_crypt = 
@@ -726,8 +721,8 @@ static void read_kex_algos() {
 			(struct dropbear_hash*)c2s_hash_algo->data;
 		ses.newkeys->trans_algo_mac = 
 			(struct dropbear_hash*)s2c_hash_algo->data;
-		ses.newkeys->recv_algo_comp = c2s_comp_algo->val;
-		ses.newkeys->trans_algo_comp = s2c_comp_algo->val;
+		ses.newkeys->recv_algo_comp = c2s_cofp_algo->val;
+		ses.newkeys->trans_algo_comp = s2c_cofp_algo->val;
 	}
 
 	/* reserved for future extensions */

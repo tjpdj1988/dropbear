@@ -34,11 +34,11 @@
 
 struct RSA_key {
 
-	mp_int* n;
-	mp_int* e;
-	mp_int* d;
-	mp_int* p;
-	mp_int* q;
+	fp_int* n;
+	fp_int* e;
+	fp_int* d;
+	fp_int* p;
+	fp_int* q;
 
 };
 

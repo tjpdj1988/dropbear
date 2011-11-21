@@ -205,18 +205,18 @@ void genrandom(unsigned char* buf, unsigned int len) {
 	m_burn(hash, sizeof(hash));
 }
 
-/* Generates a random mp_int. 
- * max is a *mp_int specifying an upper bound.
- * rand must be an initialised *mp_int for the result.
+/* Generates a random fp_int. 
+ * max is a *fp_int specifying an upper bound.
+ * rand must be an initialised *fp_int for the result.
  * the result rand satisfies:  0 < rand < max 
  * */
-void gen_random_mpint(mp_int *max, mp_int *rand) {
+void gen_random_fpint(fp_int *max, fp_int *rand) {
 
 	unsigned char *randbuf = NULL;
 	unsigned int len = 0;
 	const unsigned char masks[] = {0xff, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f};
 
-	const int size_bits = mp_count_bits(max);
+	const int size_bits = fp_count_bits(max);
 
 	len = size_bits / 8;
 	if ((size_bits % 8) != 0) {
@@ -226,15 +226,15 @@ void gen_random_mpint(mp_int *max, mp_int *rand) {
 	randbuf = (unsigned char*)m_malloc(len);
 	do {
 		genrandom(randbuf, len);
-		/* Mask out the unrequired bits - mp_read_unsigned_bin expects
+		/* Mask out the unrequired bits - fp_read_unsigned_bin expects
 		 * MSB first.*/
 		randbuf[0] &= masks[size_bits % 8];
 
-		bytes_to_mp(rand, randbuf, len);
+		bytes_to_fp(rand, randbuf, len);
 
 		/* keep regenerating until we get one satisfying
 		 * 0 < rand < max    */
-	} while (mp_cmp(rand, max) != MP_LT);
+	} while (fp_cmp(rand, max) != FP_LT);
 	m_burn(randbuf, len);
 	m_free(randbuf);
 }

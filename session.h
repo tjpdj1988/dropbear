@@ -164,7 +164,7 @@ struct sshsession {
 	struct key_context *newkeys;
 	unsigned char *session_id; /* this is the hash from the first kex */
 	/* The below are used temorarily during kex, are freed after use */
-	mp_int * dh_K; /* SSH_MSG_KEXDH_REPLY and sending SSH_MSH_NEWKEYS */
+	fp_int * dh_K; /* SSH_MSG_KEXDH_REPLY and sending SSH_MSH_NEWKEYS */
 	unsigned char hash[SHA1_HASH_SIZE]; /* the hash*/
 	buffer* kexhashbuf; /* session hash buffer calculated from various packets*/
 	buffer* transkexinit; /* the kexinit packet we send should be kept so we
@@ -243,7 +243,7 @@ typedef enum {
 
 struct clientsession {
 
-	mp_int *dh_e, *dh_x; /* Used during KEX */
+	fp_int *dh_e, *dh_x; /* Used during KEX */
 	cli_kex_state kex_state; /* Used for progressing KEX */
 	cli_state state; /* Used to progress auth/channelsession etc */
 	unsigned donefirstkex : 1; /* Set when we set sentnewkeys, never reset */

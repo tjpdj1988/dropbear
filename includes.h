@@ -121,7 +121,9 @@
 #endif
 
 #include "libtomcrypt/src/headers/tomcrypt.h"
-#include "libtommath/tommath.h"
+//#include "libtommath/tommath.h"
+#include "libtomsfastmath/tfm.h"
+
 
 #include "compat.h"
 #include "fake-rfc2553.h"

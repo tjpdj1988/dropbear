@@ -22,52 +22,61 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-/* Contains helper functions for mp_int handling */
+/* Contains helper functions for fp_int handling */
 
 #include "includes.h"
 #include "dbutil.h"
 
-/* wrapper for mp_init, failing fatally on errors (memory allocation) */
-void m_mp_init(mp_int *mp) {
+/* wrapper for fp_init, failing fatally on errors (memory allocation) */
+void m_fp_init(fp_int *fp) {
 
-	if (mp_init(mp) != MP_OKAY) {
-		dropbear_exit("mem alloc error");
-	}
+	fp_init(fp);
 }
 
-/* simplified duplication of bn_mp_multi's mp_init_multi, but die fatally
+/* simplified duplication of bn_fp_multi's fp_init_multi, but die fatally
  * on error */
-void m_mp_init_multi(mp_int *mp, ...) 
+void m_fp_init_multi(fp_int *fp, ...) 
 {
-    mp_int* cur_arg = mp;
+    fp_int* cur_arg = fp;
     va_list args;
 
-    va_start(args, mp);        /* init args to next argument from caller */
+    va_start(args, fp);        /* init args to next argument from caller */
     while (cur_arg != NULL) {
-        if (mp_init(cur_arg) != MP_OKAY) {
-			dropbear_exit("mem alloc error");
-        }
-        cur_arg = va_arg(args, mp_int*);
+        fp_init(cur_arg);
+        cur_arg = va_arg(args, fp_int*);
     }
     va_end(args);
 }
 
-void bytes_to_mp(mp_int *mp, const unsigned char* bytes, unsigned int len) {
+/* simplified duplication of bn_fp_multi's fp_init_multi, but die fatally
+ * on error */
+void m_fp_zero_multi(fp_int *fp, ...) 
+{
+    fp_int* cur_arg = fp;
+    va_list args;
 
-	if (mp_read_unsigned_bin(mp, (unsigned char*)bytes, len) != MP_OKAY) {
-		dropbear_exit("mem alloc error");
-	}
+    va_start(args, fp);        /* init args to next argument from caller */
+    while (cur_arg != NULL) {
+        fp_zero(cur_arg);
+        cur_arg = va_arg(args, fp_int*);
+    }
+    va_end(args);
 }
 
-/* hash the ssh representation of the mp_int mp */
-void sha1_process_mp(hash_state *hs, mp_int *mp) {
+void bytes_to_fp(fp_int *fp, const unsigned char* bytes, unsigned int len) {
+
+	fp_read_unsigned_bin(fp, (unsigned char*)bytes, len);
+}
+
+/* hash the ssh representation of the fp_int fp */
+void sha1_process_fp(hash_state *hs, fp_int *fp) {
 
 	int i;
 	buffer * buf;
 
 	buf = buf_new(512 + 20); /* max buffer is a 4096 bit key, 
 								plus header + some leeway*/
-	buf_putmpint(buf, mp);
+	buf_putfpint(buf, fp);
 	i = buf->pos;
 	buf_setpos(buf, 0);
 	sha1_process(hs, buf_getptr(buf, i), i);

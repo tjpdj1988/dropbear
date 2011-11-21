@@ -24,24 +24,24 @@
 
 /* The format of the keyfiles is basically a raw dump of the buffer. Data types
  * are specified in the transport draft - string is a 32-bit len then the
- * non-null-terminated string, mp_int is a 32-bit len then the bignum data.
+ * non-null-terminated string, fp_int is a 32-bit len then the bignum data.
  * The actual functions are buf_put_rsa_priv_key() and buf_put_dss_priv_key()
 
  * RSA:
  * string	"ssh-rsa"
- * mp_int	e
- * mp_int	n
- * mp_int	d
- * mp_int	p (newer versions only)
- * mp_int	q (newer versions only) 
+ * fp_int	e
+ * fp_int	n
+ * fp_int	d
+ * fp_int	p (newer versions only)
+ * fp_int	q (newer versions only) 
  *
  * DSS:
  * string	"ssh-dss"
- * mp_int	p
- * mp_int	q
- * mp_int	g
- * mp_int	y
- * mp_int	x
+ * fp_int	p
+ * fp_int	q
+ * fp_int	g
+ * fp_int	y
+ * fp_int	x
  *
  */
 #include "includes.h"

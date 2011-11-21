@@ -37,6 +37,8 @@
 /* avoid excessively large numbers, > ~8192 bits */
 #define BUF_MAX_MPINT (8240 / 8)
 
+#define BUF_MAX_FPINT (FP_MAX_SIZE / 8)
+
 /* Create (malloc) a new buffer of size */
 buffer* buf_new(unsigned int size) {
 
@@ -265,24 +267,24 @@ void buf_putbytes(buffer *buf, const unsigned char *bytes, unsigned int len) {
 
 /* for our purposes we only need positive (or 0) numbers, so will
  * fail if we get negative numbers */
-void buf_putmpint(buffer* buf, mp_int * mp) {
+void buf_putfpint(buffer* buf, fp_int * fp) {
 
 	unsigned int len, pad = 0;
-	TRACE(("enter buf_putmpint"))
+	TRACE(("enter buf_putfpint"))
 
-	dropbear_assert(mp != NULL);
+	dropbear_assert(fp != NULL);
 
-	if (SIGN(mp) == MP_NEG) {
+	if (SIGN(fp) == FP_NEG) {
 		dropbear_exit("negative bignum");
 	}
 
 	/* zero check */
-	if (USED(mp) == 1 && DIGIT(mp, 0) == 0) {
+	if (USED(fp) == 1 && DIGIT(fp, 0) == 0) {
 		len = 0;
 	} else {
-		/* SSH spec requires padding for mpints with the MSB set, this code
-		 * implements it */
-		len = mp_count_bits(mp);
+		/* SSH spec requires padding for fpints with the MSB set, this code
+		 * ifplements it */
+		len = fp_count_bits(fp);
 		/* if the top bit of MSB is set, we need to pad */
 		pad = (len%8 == 0) ? 1 : 0;
 		len = len / 8 + 1; /* don't worry about rounding, we need it for
@@ -298,29 +300,29 @@ void buf_putmpint(buffer* buf, mp_int * mp) {
 		if (pad) {
 			buf_putbyte(buf, 0x00);
 		}
-		if (mp_to_unsigned_bin(mp, buf_getwriteptr(buf, len-pad)) != MP_OKAY) {
-			dropbear_exit("mpint error");
-		}
+ 		/* Should always succseed */ 
+		fp_to_unsigned_bin(fp, buf_getwriteptr(buf, len-pad)) ;
+
 		buf_incrwritepos(buf, len-pad);
 	}
 
-	TRACE(("leave buf_putmpint"))
+	TRACE(("leave buf_putfpint"))
 }
 
-/* Retrieve an mp_int from the buffer.
+/* Retrieve an fp_int from the buffer.
  * Will fail for -ve since they shouldn't be required here.
  * Returns DROPBEAR_SUCCESS or DROPBEAR_FAILURE */
-int buf_getmpint(buffer* buf, mp_int* mp) {
+int buf_getfpint(buffer* buf, fp_int* fp) {
 
 	unsigned int len;
 	len = buf_getint(buf);
 	
 	if (len == 0) {
-		mp_zero(mp);
+		fp_zero(fp);
 		return DROPBEAR_SUCCESS;
 	}
 
-	if (len > BUF_MAX_MPINT) {
+	if (len > BUF_MAX_FPINT) {
 		return DROPBEAR_FAILURE;
 	}
 
@@ -329,9 +331,8 @@ int buf_getmpint(buffer* buf, mp_int* mp) {
 		return DROPBEAR_FAILURE;
 	}
 
-	if (mp_read_unsigned_bin(mp, buf_getptr(buf, len), len) != MP_OKAY) {
-		return DROPBEAR_FAILURE;
-	}
+	/** Should always succseed */
+	fp_read_unsigned_bin(fp, buf_getptr(buf, len), len);
 
 	buf_incrpos(buf, len);
 	return DROPBEAR_SUCCESS;
