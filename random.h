@@ -31,6 +31,6 @@ void seedrandom();
 void reseedrandom();
 void genrandom(unsigned char* buf, int len);
 void addrandom(unsigned char* buf, int len);
-void gen_random_mpint(fp_int *max, fp_int *rand);
+void gen_random_fpint(fp_int *max, fp_int *rand);
 
 #endif /* _RANDOM_H_ */

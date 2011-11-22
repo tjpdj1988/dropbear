@@ -519,7 +519,7 @@ void recv_msg_kexinit() {
 	TRACE(("leave recv_msg_kexinit"))
 }
 
-static void load_dh_p(mp_int * dh_p)
+static void load_dh_p(fp_int * dh_p)
 {
 	switch (ses.newkeys->algo_kex) {
 		case DROPBEAR_KEX_DH_GROUP1:
@@ -644,8 +644,8 @@ static void read_kex_algos() {
 	algo_type * s2c_hash_algo = NULL;
 	algo_type * c2s_cipher_algo = NULL;
 	algo_type * s2c_cipher_algo = NULL;
-	algo_type * c2s_cofp_algo = NULL;
-	algo_type * s2c_cofp_algo = NULL;
+	algo_type * c2s_comp_algo = NULL;
+	algo_type * s2c_comp_algo = NULL;
 	/* the generic one */
 	algo_type * algo = NULL;
 
@@ -713,30 +713,20 @@ static void read_kex_algos() {
 	TRACE(("hash s2c is  %s", s2c_hash_algo->name))
 
 	/* compression_algorithms_client_to_server */
-<<<<<<< mine
-	c2s_cofp_algo = ses.buf_match_algo(ses.payload, sshcompress, &goodguess);
-	if (c2s_cofp_algo == NULL) {
-=======
 	c2s_comp_algo = ses.buf_match_algo(ses.payload, ses.compress_algos, &goodguess);
 	if (c2s_comp_algo == NULL) {
->>>>>>> theirs
 		erralgo = "comp c->s";
 		goto error;
 	}
-	TRACE(("hash c2s is  %s", c2s_cofp_algo->name))
+	TRACE(("hash c2s is  %s", c2s_comp_algo->name))
 
 	/* compression_algorithms_server_to_client */
-<<<<<<< mine
-	s2c_cofp_algo = ses.buf_match_algo(ses.payload, sshcompress, &goodguess);
-	if (s2c_cofp_algo == NULL) {
-=======
 	s2c_comp_algo = ses.buf_match_algo(ses.payload, ses.compress_algos, &goodguess);
 	if (s2c_comp_algo == NULL) {
->>>>>>> theirs
 		erralgo = "comp s->c";
 		goto error;
 	}
-	TRACE(("hash s2c is  %s", s2c_cofp_algo->name))
+	TRACE(("hash s2c is  %s", s2c_comp_algo->name))
 
 	/* languages_client_to_server */
 	buf_eatstring(ses.payload);
@@ -767,13 +757,8 @@ static void read_kex_algos() {
 			(struct dropbear_hash*)s2c_hash_algo->data;
 		ses.newkeys->trans.algo_mac = 
 			(struct dropbear_hash*)c2s_hash_algo->data;
-<<<<<<< mine
-		ses.newkeys->recv_algo_comp = s2c_cofp_algo->val;
-		ses.newkeys->trans_algo_comp = c2s_cofp_algo->val;
-=======
 		ses.newkeys->recv.algo_comp = s2c_comp_algo->val;
 		ses.newkeys->trans.algo_comp = c2s_comp_algo->val;
->>>>>>> theirs
 	} else {
 		/* SERVER */
 		ses.newkeys->recv.algo_crypt = 
@@ -788,13 +773,8 @@ static void read_kex_algos() {
 			(struct dropbear_hash*)c2s_hash_algo->data;
 		ses.newkeys->trans.algo_mac = 
 			(struct dropbear_hash*)s2c_hash_algo->data;
-<<<<<<< mine
-		ses.newkeys->recv_algo_comp = c2s_cofp_algo->val;
-		ses.newkeys->trans_algo_comp = s2c_cofp_algo->val;
-=======
 		ses.newkeys->recv.algo_comp = c2s_comp_algo->val;
 		ses.newkeys->trans.algo_comp = s2c_comp_algo->val;
->>>>>>> theirs
 	}
 
 	/* reserved for future extensions */

@@ -15,11 +15,12 @@ endif
 
 LTC=libtomcrypt/libtomcrypt.a
 LTM=libtommath/libtommath.a
+TFM=tomsfastmath/libtfm.a
 
 ifeq (@BUNDLED_LIBTOM@, 1)
-LIBTOM_DEPS=$(LTC) $(LTM)
+LIBTOM_DEPS=$(LTC) $(TFM)
 CFLAGS+=-I$(srcdir)/libtomcrypt/src/headers/ 
-LIBS+=$(LTC) $(LTM)
+LIBS+=$(LTC) $(TFM)
 endif
 
 COMMONOBJS=dbutil.o buffer.o \
@@ -190,7 +191,10 @@ $(LTC): options.h
 $(LTM): options.h
 	cd libtommath && $(MAKE)
 
-.PHONY : clean sizes thisclean distclean tidy ltc-clean ltm-clean
+$(TFM): options.h
+	cd tomsfastmath && $(MAKE)
+
+.PHONY : clean sizes thisclean distclean tidy ltc-clean ltm-clean tfm-clean
 
 ltc-clean:
 	cd libtomcrypt && $(MAKE) clean
@@ -198,10 +202,13 @@ ltc-clean:
 ltm-clean:
 	cd libtommath && $(MAKE) clean
 
+tfm-clean:
+	cd tomsfastmath && $(MAKE) clean
+
 sizes: dropbear
 	objdump -t dropbear|grep ".text"|cut -d "." -f 2|sort -rn
 
-clean: ltc-clean ltm-clean thisclean
+clean: ltc-clean ltm-clean tfm-clean thisclean
 
 thisclean:
 	-rm -f dropbear dbclient dropbearkey dropbearconvert scp scp-progress \

@@ -122,7 +122,7 @@
 
 #ifdef BUNDLED_LIBTOM
 #include "libtomcrypt/src/headers/tomcrypt.h"
-#include "libtommath/tommath.h"
+#include "tomsfastmath/src/headers/tfm.h"
 #else
 #include <tomcrypt.h>
 #include <tommath.h>

@@ -288,12 +288,12 @@ void buf_putfpint(buffer* buf, fp_int * fp) {
 
 	dropbear_assert(fp != NULL);
 
-	if (SIGN(fp) == FP_NEG) {
+	if (fp->sign == FP_NEG) {
 		dropbear_exit("negative bignum");
 	}
 
 	/* zero check */
-	if (USED(fp) == 1 && DIGIT(fp, 0) == 0) {
+	if (fp_iszero(fp) == FP_YES) {
 		len = 0;
 	} else {
 		/* SSH spec requires padding for fpints with the MSB set, this code

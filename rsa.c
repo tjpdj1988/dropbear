@@ -38,7 +38,7 @@
 
 #ifdef DROPBEAR_RSA 
 
-static void rsa_pad_em(rsa_key * key,
+static void rsa_pad_em(dropbear_rsa_key * key,
 		const unsigned char * data, unsigned int len,
 		fp_int * rsa_em);
 
@@ -47,15 +47,14 @@ static void rsa_pad_em(rsa_key * key,
  * The key will have the same format as buf_put_rsa_key.
  * These should be freed with rsa_key_free.
  * Returns DROPBEAR_SUCCESS or DROPBEAR_FAILURE */
-int buf_get_rsa_pub_key(buffer* buf, rsa_key *key) {
+int buf_get_rsa_pub_key(buffer* buf, dropbear_rsa_key *key) {
 
     int ret = DROPBEAR_FAILURE;
 	TRACE(("enter buf_get_rsa_pub_key"))
 	dropbear_assert(key != NULL);
 	key->e = m_malloc(sizeof(fp_int));
 	key->n = m_malloc(sizeof(fp_int));
-	fp_init(key->e);
-	fp_init(key->n);
+	m_fp_init_multi(key->e, key->n, NULL);
 	key->d = NULL;
 	key->p = NULL;
 	key->q = NULL;
@@ -86,7 +85,7 @@ out:
 /* Same as buf_get_rsa_pub_key, but reads private bits at the end.
  * Loads a private rsa key from a buffer
  * Returns DROPBEAR_SUCCESS or DROPBEAR_FAILURE */
-int buf_get_rsa_priv_key(buffer* buf, rsa_key *key) {
+int buf_get_rsa_priv_key(buffer* buf, dropbear_rsa_key *key) {
     int ret = DROPBEAR_FAILURE;
 
 	TRACE(("enter buf_get_rsa_priv_key"))
@@ -140,7 +139,7 @@ out:
 	
 
 /* Clear and free the memory used by a public or private key */
-void rsa_key_free(rsa_key *key) {
+void rsa_key_free(dropbear_rsa_key *key) {
 
 	TRACE(("enter rsa_key_free"))
 
@@ -178,7 +177,7 @@ void rsa_key_free(rsa_key *key) {
  * fp_int	e
  * fp_int	n
  */
-void buf_put_rsa_pub_key(buffer* buf, rsa_key *key) {
+void buf_put_rsa_pub_key(buffer* buf, dropbear_rsa_key *key) {
 
 	TRACE(("enter buf_put_rsa_pub_key"))
 	dropbear_assert(key != NULL);
@@ -192,7 +191,7 @@ void buf_put_rsa_pub_key(buffer* buf, rsa_key *key) {
 }
 
 /* Same as buf_put_rsa_pub_key, but with the private "x" key appended */
-void buf_put_rsa_priv_key(buffer* buf, rsa_key *key) {
+void buf_put_rsa_priv_key(buffer* buf, dropbear_rsa_key *key) {
 
 	TRACE(("enter buf_put_rsa_priv_key"))
 
@@ -216,7 +215,7 @@ void buf_put_rsa_priv_key(buffer* buf, rsa_key *key) {
 #ifdef DROPBEAR_SIGNKEY_VERIFY
 /* Verify a signature in buf, made on data by the key given.
  * Returns DROPBEAR_SUCCESS or DROPBEAR_FAILURE */
-int buf_rsa_verify(buffer * buf, rsa_key *key, const unsigned char* data,
+int buf_rsa_verify(buffer * buf, dropbear_rsa_key *key, const unsigned char* data,
 		unsigned int len) {
 
 	unsigned int slen;
@@ -275,7 +274,7 @@ out:
 
 /* Sign the data presented with key, writing the signature contents
  * to the buffer */
-void buf_put_rsa_sign(buffer* buf, rsa_key *key, const unsigned char* data,
+void buf_put_rsa_sign(buffer* buf, dropbear_rsa_key *key, const unsigned char* data,
 		unsigned int len) {
 
 	unsigned int nsize, ssize;
@@ -342,9 +341,7 @@ void buf_put_rsa_sign(buffer* buf, rsa_key *key, const unsigned char* data,
 
 #endif /* RSA_BLINDING */
 
-	fp_zero(&rsa_tmp1);
-	fp_zero(&rsa_tmp2);
-	fp_zero(&rsa_tmp3);
+	m_fp_zero_multi(&rsa_tmp1, &rsa_tmp2, &rsa_tmp3, NULL);
 	
 	/* create the signature to return */
 	buf_putstring(buf, SSH_SIGNKEY_RSA, SSH_SIGNKEY_RSA_LEN);
@@ -385,7 +382,7 @@ void buf_put_rsa_sign(buffer* buf, rsa_key *key, const unsigned char* data,
  *
  * rsa_em must be a pointer to an initialised fp_int.
  */
-static void rsa_pad_em(rsa_key * key,
+static void rsa_pad_em(dropbear_rsa_key * key,
 		const unsigned char * data, unsigned int len, 
 		fp_int * rsa_em) {
 

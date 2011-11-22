@@ -34,20 +34,12 @@
 
 typedef struct {
 
-<<<<<<< mine
 	fp_int* p;
 	fp_int* q;
 	fp_int* g;
 	fp_int* y;
-	fp_int* x;
-=======
-	mp_int* p;
-	mp_int* q;
-	mp_int* g;
-	mp_int* y;
 	/* x is the private part */
-	mp_int* x;
->>>>>>> theirs
+	fp_int* x;
 
 } dropbear_dss_key;
 
