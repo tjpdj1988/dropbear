@@ -1,0 +1,258 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+CARRY_FORWARD	sqr/fp_sqr_comba.c	/^#define CARRY_FORWARD /;"	d	file:
+CLEAR_CARRY	sqr/fp_sqr_comba.c	/^#define CLEAR_CARRY /;"	d	file:
+COMBA_CLEAR	mul/fp_mul_comba.c	/^#define COMBA_CLEAR /;"	d	file:
+COMBA_FINI	mul/fp_mul_comba.c	/^#define COMBA_FINI /;"	d	file:
+COMBA_FINI	mul/fp_mul_comba.c	/^#define COMBA_FINI$/;"	d	file:
+COMBA_FINI	sqr/fp_sqr_comba.c	/^#define COMBA_FINI /;"	d	file:
+COMBA_FINI	sqr/fp_sqr_comba.c	/^#define COMBA_FINI$/;"	d	file:
+COMBA_FORWARD	mul/fp_mul_comba.c	/^#define COMBA_FORWARD /;"	d	file:
+COMBA_START	mul/fp_mul_comba.c	/^#define COMBA_START /;"	d	file:
+COMBA_START	mul/fp_mul_comba.c	/^#define COMBA_START$/;"	d	file:
+COMBA_START	sqr/fp_sqr_comba.c	/^#define COMBA_START$/;"	d	file:
+COMBA_STORE	mul/fp_mul_comba.c	/^#define COMBA_STORE(/;"	d	file:
+COMBA_STORE	sqr/fp_sqr_comba.c	/^#define COMBA_STORE(/;"	d	file:
+COMBA_STORE2	mul/fp_mul_comba.c	/^#define COMBA_STORE2(/;"	d	file:
+COMBA_STORE2	sqr/fp_sqr_comba.c	/^#define COMBA_STORE2(/;"	d	file:
+DIGIT_BIT	headers/tfm.h	/^#define DIGIT_BIT /;"	d
+FP_64BIT	headers/tfm.h	/^       #define FP_64BIT$/;"	d
+FP_64BIT	headers/tfm.h	/^   #undef FP_64BIT$/;"	d
+FP_EQ	headers/tfm.h	/^#define FP_EQ /;"	d
+FP_GT	headers/tfm.h	/^#define FP_GT /;"	d
+FP_LT	headers/tfm.h	/^#define FP_LT /;"	d
+FP_MASK	headers/tfm.h	/^#define FP_MASK /;"	d
+FP_MAX_SIZE	headers/tfm.h	/^   #define FP_MAX_SIZE /;"	d
+FP_MEM	headers/tfm.h	/^#define FP_MEM /;"	d
+FP_NEG	headers/tfm.h	/^#define FP_NEG /;"	d
+FP_NO	headers/tfm.h	/^#define FP_NO /;"	d
+FP_OKAY	headers/tfm.h	/^#define FP_OKAY /;"	d
+FP_SIZE	headers/tfm.h	/^#define FP_SIZE /;"	d
+FP_VAL	headers/tfm.h	/^#define FP_VAL /;"	d
+FP_YES	headers/tfm.h	/^#define FP_YES /;"	d
+FP_ZPOS	headers/tfm.h	/^#define FP_ZPOS /;"	d
+INNERMUL	mont/fp_montgomery_reduce.c	/^#define INNERMUL /;"	d	file:
+INNERMUL8	mont/fp_montgomery_reduce.c	/^#define INNERMUL8 /;"	d	file:
+LO	mont/fp_montgomery_reduce.c	/^#define LO /;"	d	file:
+LOOP_END	mont/fp_montgomery_reduce.c	/^#define LOOP_END /;"	d	file:
+LOOP_END	mont/fp_montgomery_reduce.c	/^#define LOOP_END$/;"	d	file:
+LOOP_MACRO	generators/comba_mont_gen.c	/^#define LOOP_MACRO(/;"	d	file:
+LOOP_START	mont/fp_montgomery_reduce.c	/^#define LOOP_START /;"	d	file:
+MAX	headers/tfm.h	/^   #define MAX(/;"	d
+MIN	headers/tfm.h	/^   #define MIN(/;"	d
+MONT_FINI	mont/fp_montgomery_reduce.c	/^#define MONT_FINI /;"	d	file:
+MONT_FINI	mont/fp_montgomery_reduce.c	/^#define MONT_FINI$/;"	d	file:
+MONT_START	mont/fp_montgomery_reduce.c	/^#define MONT_START /;"	d	file:
+MULADD	mul/fp_mul_comba.c	/^#define MULADD(/;"	d	file:
+PROPCARRY	mont/fp_montgomery_reduce.c	/^#define PROPCARRY /;"	d	file:
+SQRADD	sqr/fp_sqr_comba.c	/^#define SQRADD(/;"	d	file:
+SQRADD2	sqr/fp_sqr_comba.c	/^#define SQRADD2(/;"	d	file:
+SQRADDAC	sqr/fp_sqr_comba.c	/^#define SQRADDAC(/;"	d	file:
+SQRADDDB	sqr/fp_sqr_comba.c	/^#define SQRADDDB /;"	d	file:
+SQRADDSC	sqr/fp_sqr_comba.c	/^#define SQRADDSC(/;"	d	file:
+TFM_ARM	headers/tfm.h	/^   #undef TFM_ARM$/;"	d
+TFM_ASM	headers/tfm.h	/^   #define TFM_ASM$/;"	d
+TFM_ASM	headers/tfm.h	/^   #undef TFM_ASM /;"	d
+TFM_AVR32	headers/tfm.h	/^   #undef TFM_AVR32$/;"	d
+TFM_DEFINES	mul/fp_mul_comba_12.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_17.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_20.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_24.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_28.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_3.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_32.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_4.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_48.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_6.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_64.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_7.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_8.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_9.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	mul/fp_mul_comba_small_set.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_12.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_17.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_20.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_24.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_28.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_3.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_32.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_4.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_48.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_6.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_64.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_7.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_8.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_9.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_generic.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_DEFINES	sqr/fp_sqr_comba_small_set.c	/^#define TFM_DEFINES$/;"	d	file:
+TFM_H_	headers/tfm.h	/^#define TFM_H_$/;"	d
+TFM_ISO	sqr/fp_sqr_comba.c	/^#define TFM_ISO$/;"	d	file:
+TFM_MUL12	headers/tfm.h	/^       #define TFM_MUL12$/;"	d
+TFM_MUL17	headers/tfm.h	/^       #define TFM_MUL17$/;"	d
+TFM_MUL20	headers/tfm.h	/^#define TFM_MUL20$/;"	d
+TFM_MUL24	headers/tfm.h	/^#define TFM_MUL24$/;"	d
+TFM_MUL28	headers/tfm.h	/^#define TFM_MUL28$/;"	d
+TFM_MUL3	headers/tfm.h	/^       #define TFM_MUL3$/;"	d
+TFM_MUL32	headers/tfm.h	/^#define TFM_MUL32$/;"	d
+TFM_MUL4	headers/tfm.h	/^       #define TFM_MUL4$/;"	d
+TFM_MUL48	headers/tfm.h	/^#define TFM_MUL48$/;"	d
+TFM_MUL6	headers/tfm.h	/^       #define TFM_MUL6$/;"	d
+TFM_MUL64	headers/tfm.h	/^#define TFM_MUL64$/;"	d
+TFM_MUL7	headers/tfm.h	/^       #define TFM_MUL7$/;"	d
+TFM_MUL8	headers/tfm.h	/^       #define TFM_MUL8$/;"	d
+TFM_MUL9	headers/tfm.h	/^       #define TFM_MUL9$/;"	d
+TFM_PPC32	headers/tfm.h	/^   #undef TFM_PPC32$/;"	d
+TFM_PPC64	headers/tfm.h	/^   #undef TFM_PPC64$/;"	d
+TFM_PRIME_2MSB_OFF	headers/tfm.h	/^#define TFM_PRIME_2MSB_OFF /;"	d
+TFM_PRIME_2MSB_ON	headers/tfm.h	/^#define TFM_PRIME_2MSB_ON /;"	d
+TFM_PRIME_BBS	headers/tfm.h	/^#define TFM_PRIME_BBS /;"	d
+TFM_PRIME_SAFE	headers/tfm.h	/^#define TFM_PRIME_SAFE /;"	d
+TFM_SMALL_SET	headers/tfm.h	/^#define TFM_SMALL_SET$/;"	d
+TFM_SQR12	headers/tfm.h	/^       #define TFM_SQR12$/;"	d
+TFM_SQR17	headers/tfm.h	/^       #define TFM_SQR17$/;"	d
+TFM_SQR20	headers/tfm.h	/^#define TFM_SQR20$/;"	d
+TFM_SQR24	headers/tfm.h	/^#define TFM_SQR24$/;"	d
+TFM_SQR28	headers/tfm.h	/^#define TFM_SQR28$/;"	d
+TFM_SQR3	headers/tfm.h	/^       #define TFM_SQR3$/;"	d
+TFM_SQR32	headers/tfm.h	/^#define TFM_SQR32$/;"	d
+TFM_SQR4	headers/tfm.h	/^       #define TFM_SQR4$/;"	d
+TFM_SQR48	headers/tfm.h	/^#define TFM_SQR48$/;"	d
+TFM_SQR6	headers/tfm.h	/^       #define TFM_SQR6$/;"	d
+TFM_SQR64	headers/tfm.h	/^#define TFM_SQR64$/;"	d
+TFM_SQR7	headers/tfm.h	/^       #define TFM_SQR7$/;"	d
+TFM_SQR8	headers/tfm.h	/^       #define TFM_SQR8$/;"	d
+TFM_SQR9	headers/tfm.h	/^       #define TFM_SQR9$/;"	d
+TFM_SSE2	headers/tfm.h	/^   #undef TFM_SSE2$/;"	d
+TFM_SSE2	mul/fp_mul_comba.c	/^   #undef TFM_SSE2$/;"	d	file:
+TFM_SSE2	sqr/fp_sqr_comba.c	/^   #undef TFM_SSE2$/;"	d	file:
+TFM_X86	headers/tfm.h	/^      #define TFM_X86$/;"	d
+TFM_X86	headers/tfm.h	/^   #undef TFM_X86$/;"	d
+TFM_X86	mul/fp_mul_comba.c	/^   #define TFM_X86$/;"	d	file:
+TFM_X86	sqr/fp_sqr_comba.c	/^   #define TFM_X86$/;"	d	file:
+TFM_X86_64	headers/tfm.h	/^      #define TFM_X86_64$/;"	d
+TFM_X86_64	headers/tfm.h	/^   #undef TFM_X86_64$/;"	d
+_fp_exptmod	exptmod/fp_exptmod.c	/^static int _fp_exptmod(fp_int * G, fp_int * X, fp_int * P, fp_int * Y)$/;"	f	file:
+dp	headers/tfm.h	/^    fp_digit dp[FP_SIZE];$/;"	m	struct:__anon1
+fp_2expt	exptmod/fp_2expt.c	/^void fp_2expt(fp_int *a, int b)$/;"	f
+fp_abs	headers/tfm.h	/^#define fp_abs(/;"	d
+fp_add	addsub/fp_add.c	/^void fp_add(fp_int *a, fp_int *b, fp_int *c)$/;"	f
+fp_add_d	addsub/fp_add_d.c	/^void fp_add_d(fp_int *a, fp_digit b, fp_int *c)$/;"	f
+fp_addmod	addsub/fp_addmod.c	/^int fp_addmod(fp_int *a, fp_int *b, fp_int *c, fp_int *d)$/;"	f
+fp_clamp	headers/tfm.h	/^#define fp_clamp(/;"	d
+fp_cmp	addsub/fp_cmp.c	/^int fp_cmp(fp_int *a, fp_int *b)$/;"	f
+fp_cmp_d	addsub/fp_cmp_d.c	/^int fp_cmp_d(fp_int *a, fp_digit b)$/;"	f
+fp_cmp_mag	addsub/fp_cmp_mag.c	/^int fp_cmp_mag(fp_int *a, fp_int *b)$/;"	f
+fp_cnt_lsb	bit/fp_cnt_lsb.c	/^int fp_cnt_lsb(fp_int *a)$/;"	f
+fp_copy	headers/tfm.h	/^#define fp_copy(/;"	d
+fp_count_bits	bit/fp_count_bits.c	/^int fp_count_bits (fp_int * a)$/;"	f
+fp_digit	headers/tfm.h	/^   typedef ulong64            fp_digit;$/;"	t
+fp_digit	headers/tfm.h	/^   typedef unsigned long      fp_digit;$/;"	t
+fp_div	divide/fp_div.c	/^int fp_div(fp_int *a, fp_int *b, fp_int *c, fp_int *d)$/;"	f
+fp_div_2	bit/fp_div_2.c	/^void fp_div_2(fp_int * a, fp_int * b)$/;"	f
+fp_div_2d	bit/fp_div_2d.c	/^void fp_div_2d(fp_int *a, int b, fp_int *c, fp_int *d)$/;"	f
+fp_div_d	divide/fp_div_d.c	/^int fp_div_d(fp_int *a, fp_digit b, fp_int *c, fp_digit *d)$/;"	f
+fp_exptmod	exptmod/fp_exptmod.c	/^int fp_exptmod(fp_int * G, fp_int * X, fp_int * P, fp_int * Y)$/;"	f
+fp_gcd	numtheory/fp_gcd.c	/^void fp_gcd(fp_int *a, fp_int *b, fp_int *c)$/;"	f
+fp_ident	misc/fp_ident.c	/^const char *fp_ident(void)$/;"	f
+fp_init	headers/tfm.h	/^#define fp_init(/;"	d
+fp_init_copy	headers/tfm.h	/^#define fp_init_copy(/;"	d
+fp_int	headers/tfm.h	/^} fp_int;$/;"	t	typeref:struct:__anon1
+fp_invmod	numtheory/fp_invmod.c	/^int fp_invmod(fp_int *a, fp_int *b, fp_int *c)$/;"	f
+fp_invmod_slow	numtheory/fp_invmod.c	/^static int fp_invmod_slow (fp_int * a, fp_int * b, fp_int * c)$/;"	f	file:
+fp_iseven	headers/tfm.h	/^#define fp_iseven(/;"	d
+fp_isodd	headers/tfm.h	/^#define fp_isodd(/;"	d
+fp_isprime	numtheory/fp_isprime.c	/^int fp_isprime(fp_int *a)$/;"	f
+fp_iszero	headers/tfm.h	/^#define fp_iszero(/;"	d
+fp_lcm	numtheory/fp_lcm.c	/^void fp_lcm(fp_int *a, fp_int *b, fp_int *c)$/;"	f
+fp_lshd	bit/fp_lshd.c	/^void fp_lshd(fp_int *a, int x)$/;"	f
+fp_mod	divide/fp_mod.c	/^int fp_mod(fp_int *a, fp_int *b, fp_int *c)$/;"	f
+fp_mod_2d	bit/fp_mod_2d.c	/^void fp_mod_2d(fp_int *a, int b, fp_int *c)$/;"	f
+fp_mod_d	divide/fp_mod_d.c	/^int fp_mod_d(fp_int *a, fp_digit b, fp_digit *c)$/;"	f
+fp_montgomery_calc_normalization	mont/fp_montgomery_calc_normalization.c	/^void fp_montgomery_calc_normalization(fp_int *a, fp_int *b)$/;"	f
+fp_montgomery_reduce	mont/fp_montgomery_reduce.c	/^void fp_montgomery_reduce(fp_int *a, fp_int *m, fp_digit mp)$/;"	f
+fp_montgomery_setup	mont/fp_montgomery_setup.c	/^int fp_montgomery_setup(fp_int *a, fp_digit *rho)$/;"	f
+fp_mul	mul/fp_mul.c	/^void fp_mul(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_2	mul/fp_mul_2.c	/^void fp_mul_2(fp_int * a, fp_int * b)$/;"	f
+fp_mul_2d	mul/fp_mul_2d.c	/^void fp_mul_2d(fp_int *a, int b, fp_int *c)$/;"	f
+fp_mul_comba	mul/fp_mul_comba.c	/^void fp_mul_comba(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba12	mul/fp_mul_comba_12.c	/^void fp_mul_comba12(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba17	mul/fp_mul_comba_17.c	/^void fp_mul_comba17(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba20	mul/fp_mul_comba_20.c	/^void fp_mul_comba20(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba24	mul/fp_mul_comba_24.c	/^void fp_mul_comba24(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba28	mul/fp_mul_comba_28.c	/^void fp_mul_comba28(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba3	mul/fp_mul_comba_3.c	/^void fp_mul_comba3(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba32	mul/fp_mul_comba_32.c	/^void fp_mul_comba32(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba4	mul/fp_mul_comba_4.c	/^void fp_mul_comba4(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba48	mul/fp_mul_comba_48.c	/^void fp_mul_comba48(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba6	mul/fp_mul_comba_6.c	/^void fp_mul_comba6(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba64	mul/fp_mul_comba_64.c	/^void fp_mul_comba64(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba7	mul/fp_mul_comba_7.c	/^void fp_mul_comba7(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba8	mul/fp_mul_comba_8.c	/^void fp_mul_comba8(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba9	mul/fp_mul_comba_9.c	/^void fp_mul_comba9(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_comba_small	mul/fp_mul_comba_small_set.c	/^void fp_mul_comba_small(fp_int *A, fp_int *B, fp_int *C)$/;"	f
+fp_mul_d	mul/fp_mul_d.c	/^void fp_mul_d(fp_int *a, fp_digit b, fp_int *c)$/;"	f
+fp_mulmod	mul/fp_mulmod.c	/^int fp_mulmod(fp_int *a, fp_int *b, fp_int *c, fp_int *d)$/;"	f
+fp_neg	headers/tfm.h	/^#define fp_neg(/;"	d
+fp_prime_miller_rabin	numtheory/fp_prime_miller_rabin.c	/^void fp_prime_miller_rabin (fp_int * a, fp_int * b, int *result)$/;"	f
+fp_prime_random	headers/tfm.h	/^#define fp_prime_random(/;"	d
+fp_prime_random_ex	numtheory/fp_prime_random_ex.c	/^int fp_prime_random_ex(fp_int *a, int t, int size, int flags, tfm_prime_callback cb, void *dat)$/;"	f
+fp_radix_size	bin/fp_radix_size.c	/^int fp_radix_size(fp_int *a, int radix, int *size)$/;"	f
+fp_read_radix	bin/fp_read_radix.c	/^int fp_read_radix(fp_int *a, char *str, int radix)$/;"	f
+fp_read_signed_bin	bin/fp_read_signed_bin.c	/^void fp_read_signed_bin(fp_int *a, unsigned char *b, int c)$/;"	f
+fp_read_unsigned_bin	bin/fp_read_unsigned_bin.c	/^void fp_read_unsigned_bin(fp_int *a, unsigned char *b, int c)$/;"	f
+fp_reverse	bin/fp_reverse.c	/^void fp_reverse (unsigned char *s, int len)$/;"	f
+fp_rshd	bit/fp_rshd.c	/^void fp_rshd(fp_int *a, int x)$/;"	f
+fp_s_rmap	bin/fp_s_rmap.c	/^const char *fp_s_rmap = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+\/";$/;"	v
+fp_set	misc/fp_set.c	/^void fp_set(fp_int *a, fp_digit b)$/;"	f
+fp_signed_bin_size	bin/fp_signed_bin_size.c	/^int fp_signed_bin_size(fp_int *a)$/;"	f
+fp_sqr	sqr/fp_sqr.c	/^void fp_sqr(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba	sqr/fp_sqr_comba_generic.c	/^void fp_sqr_comba(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba12	sqr/fp_sqr_comba_12.c	/^void fp_sqr_comba12(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba17	sqr/fp_sqr_comba_17.c	/^void fp_sqr_comba17(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba20	sqr/fp_sqr_comba_20.c	/^void fp_sqr_comba20(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba24	sqr/fp_sqr_comba_24.c	/^void fp_sqr_comba24(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba28	sqr/fp_sqr_comba_28.c	/^void fp_sqr_comba28(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba3	sqr/fp_sqr_comba_3.c	/^void fp_sqr_comba3(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba32	sqr/fp_sqr_comba_32.c	/^void fp_sqr_comba32(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba4	sqr/fp_sqr_comba_4.c	/^void fp_sqr_comba4(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba48	sqr/fp_sqr_comba_48.c	/^void fp_sqr_comba48(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba6	sqr/fp_sqr_comba_6.c	/^void fp_sqr_comba6(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba64	sqr/fp_sqr_comba_64.c	/^void fp_sqr_comba64(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba7	sqr/fp_sqr_comba_7.c	/^void fp_sqr_comba7(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba8	sqr/fp_sqr_comba_8.c	/^void fp_sqr_comba8(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba9	sqr/fp_sqr_comba_9.c	/^void fp_sqr_comba9(fp_int *A, fp_int *B)$/;"	f
+fp_sqr_comba_small	sqr/fp_sqr_comba_small_set.c	/^void fp_sqr_comba_small(fp_int *A, fp_int *B)$/;"	f
+fp_sqrmod	sqr/fp_sqrmod.c	/^int fp_sqrmod(fp_int *a, fp_int *b, fp_int *c)$/;"	f
+fp_sub	addsub/fp_sub.c	/^void fp_sub(fp_int *a, fp_int *b, fp_int *c)$/;"	f
+fp_sub_d	addsub/fp_sub_d.c	/^void fp_sub_d(fp_int *a, fp_digit b, fp_int *c)$/;"	f
+fp_submod	addsub/fp_submod.c	/^int fp_submod(fp_int *a, fp_int *b, fp_int *c, fp_int *d)$/;"	f
+fp_to_signed_bin	bin/fp_to_signed_bin.c	/^void fp_to_signed_bin(fp_int *a, unsigned char *b)$/;"	f
+fp_to_unsigned_bin	bin/fp_to_unsigned_bin.c	/^void fp_to_unsigned_bin(fp_int *a, unsigned char *b)$/;"	f
+fp_toradix	bin/fp_toradix.c	/^int fp_toradix(fp_int *a, char *str, int radix)$/;"	f
+fp_unsigned_bin_size	bin/fp_unsigned_bin_size.c	/^int fp_unsigned_bin_size(fp_int *a)$/;"	f
+fp_word	headers/tfm.h	/^   typedef ulong64            fp_word;$/;"	t
+fp_word	headers/tfm.h	/^   typedef unsigned long      fp_word __attribute__ ((mode(TI)));$/;"	t
+fp_zero	headers/tfm.h	/^#define fp_zero(/;"	d
+lnz	bit/fp_cnt_lsb.c	/^static const int lnz[16] = {$/;"	v	file:
+long64	headers/tfm.h	/^      typedef signed __int64     long64;$/;"	t
+long64	headers/tfm.h	/^      typedef signed long long   long64;$/;"	t
+main	generators/comba_mont_gen.c	/^int main(void)$/;"	f
+main	generators/comba_mult_gen.c	/^int main(int argc, char **argv)$/;"	f
+main	generators/comba_mult_smallgen.c	/^int main(int argc, char **argv)$/;"	f
+main	generators/comba_sqr_gen.c	/^int main(int argc, char **argv)$/;"	f
+main	generators/comba_sqr_smallgen.c	/^int main(int argc, char **argv)$/;"	f
+main	misc/fp_ident.c	/^int main(void)$/;"	f
+primes	numtheory/fp_isprime.c	/^static const fp_digit primes[256] = {$/;"	v	file:
+s_fp_add	addsub/s_fp_add.c	/^void s_fp_add(fp_int *a, fp_int *b, fp_int *c)$/;"	f
+s_fp_sub	addsub/s_fp_sub.c	/^void s_fp_sub(fp_int *a, fp_int *b, fp_int *c)$/;"	f
+s_is_power_of_two	divide/fp_div_d.c	/^static int s_is_power_of_two(fp_digit b, int *p)$/;"	f	file:
+sign	headers/tfm.h	/^             sign;$/;"	m	struct:__anon1
+tfm_prime_callback	headers/tfm.h	/^typedef int tfm_prime_callback(unsigned char *dst, int len, void *dat);$/;"	t
+ulong64	headers/tfm.h	/^      typedef unsigned __int64   ulong64;$/;"	t
+ulong64	headers/tfm.h	/^      typedef unsigned long long ulong64;$/;"	t
+ulong64	headers/tfm.h	/^   typedef unsigned long ulong64;$/;"	t
+used	headers/tfm.h	/^    int      used, $/;"	m	struct:__anon1
