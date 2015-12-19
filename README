@@ -1,6 +1,19 @@
 This is Dropbear, a smallish SSH server and client.
 https://matt.ucc.asn.au/dropbear/dropbear.html
+=============================== make =======================================
 
+NDK=/opt/android-ndk-linux/android-ndk-r10c/platforms/android-17/arch-arm/
+export CFLAGS=--sysroot=$NDK
+export LDFLAGS=--sysroot=$NDK
+export PATH=/opt/android-ndk-linux/android-ndk-r10c/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86/bin/:$PATH
+
+./configure --host=arm-linux-androideabi --disable-utmp --disable-wtmp --disable-utmpx --disable-wtmpx --disable-zlib --disable-syslog
+
+::对比一下被修改的文件,需要改回去
+
+make PROGRAMS="dropbear dropbearkey dropbearconvert scp" strip
+
+============================================================================
 INSTALL has compilation instructions.
 
 MULTI has instructions on making a multi-purpose binary (ie a single binary
