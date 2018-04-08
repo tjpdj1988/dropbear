@@ -89,3 +89,31 @@ program. You can compile it with "make scp", you may want to change the path
 of the ssh binary, specified by _PATH_SSH_PROGRAM in options.h . By default
 the progress meter isn't compiled in to save space, you can enable it by 
 adding 'SCPPROGRESS=1' to the make commandline.
+
+
+
+
+FOR ANDROID:
+修改内容参照：dropbear-android.patch
+
+生成应用：
+ make PROGRAMS="dropbear dropbearkey scp" strip
+
+
+$ ANDROID=/path/to/your/androidtree
+$ SYSROOT=${ANDROID}/prebuilt/ndk/android-ndk-r6/platforms/android-9/arch-arm/
+$ export CFLAGS=--sysroot=$SYSROOT
+$ export LDFLAGS=--sysroot=$SYSROOT
+$ export PATH=${ANDROID}/prebuilt/linux-x86/toolchain/arm-linux-androideabi-4.4.x/bin/:$PATH
+
+
+
+ ./configure --host=arm-linux-androideabi --disable-utmp --disable-wtmp --disable-utmpx --disable-utmpx --disable-zlib --disable-syslog
+$ echo "#define USE_DEV_PTMX 1" >> config.h
+
+change config.h HAVE_GETUSERSHELL to undef
+
+#undef HAVE_GETUSERSHELL
+
+$ make PROGRAMS="dropbear dropbearkey scp" strip
+

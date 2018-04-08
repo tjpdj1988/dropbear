@@ -1,0 +1,4 @@
+*.o
+*.a
+*.log
+autom4te.cache/
